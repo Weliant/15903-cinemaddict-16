@@ -39,9 +39,9 @@ if (user.rank) {
 renderTemplate(siteMainElement, createFilterTemplate(filters), RenderPosition.BEFOREEND);
 renderTemplate(siteMainElement, createSortMenuTemplate(), RenderPosition.BEFOREEND);
 renderTemplate(siteMainElement, createContentFilmsTemplate(), RenderPosition.BEFOREEND);
-renderTemplate(siteMainElement, createStatisticInfoTemplate(films, user), RenderPosition.BEFOREEND);
+// renderTemplate(siteMainElement, createStatisticInfoTemplate(films, user), RenderPosition.BEFOREEND);
 renderTemplate(siteFooterStatisticElement, createFooterStatisticTemplate(films.length), RenderPosition.BEFOREEND);
-// renderTemplate(footerElement, createFilmDetailsPopupTemplate(films[0].comments), RenderPosition.AFTEREND);
+renderTemplate(footerElement, createFilmDetailsPopupTemplate(films[0].comments), RenderPosition.AFTEREND);
 
 const siteFilmsContentElement = document.querySelector('.films');
 const siteFilmsListElement = siteFilmsContentElement.querySelector('.films-list');
@@ -91,6 +91,6 @@ renderTemplate(siteFilmDetailsCommentsElement, createFilmDetailsCommentTemplate(
 renderTemplate(siteFilmDetailsCommentNewElement, createFilmDetailsCommentNewTemplate(), RenderPosition.BEFOREEND);
 
 if(siteFilmDetailsElement){
-  // bodyElement.classList.add('hide-overflow');
+  bodyElement.classList.add('hide-overflow');
 }
 
