@@ -1,5 +1,5 @@
-export const createFooterStatisticTemplate = () => (
+export const createFooterStatisticTemplate = (count) => (
   `<p>
-    130 291 movies inside
+    ${count} movies inside
   </p>`
 );
