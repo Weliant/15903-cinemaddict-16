@@ -1,4 +1,4 @@
-export const createFilmDetailsPopupTemplate = () => (
+export const createFilmDetailsPopupTemplate = (comments) => (
   `<section class="film-details">
     <form class="film-details__inner" action="" method="get">
       <div class="film-details__top-container">
@@ -18,9 +18,7 @@ export const createFilmDetailsPopupTemplate = () => (
 
       <div class="film-details__bottom-container">
         <section class="film-details__comments-wrap">
-          <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">4</span></h3>
-          <ul class="film-details__comments-list">
-          </ul>
+          <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
           <div class="film-details__new-comment">
           </div>
         </section>
