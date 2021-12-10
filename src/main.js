@@ -3,6 +3,7 @@ import FilterView from './view/filter-view.js';
 import SortMenuView from './view/sort-menu-view.js';
 import FilmsContentView from './view/films-content-view.js';
 import FilmsListView from './view/films-list-view.js';
+import NoFilmView from './view/no-film-view.js';
 import FilmsListContainerView from './view/films-container-view.js';
 import TopRateView from './view/top-rate-view.js';
 import MostCommentedView from './view/most-commented-view.js';
@@ -35,17 +36,6 @@ if (user.rank) {
 }
 
 render(siteMainElement, new FilterView(filters).element, RenderPosition.BEFOREEND);
-render(siteMainElement, new SortMenuView().element, RenderPosition.BEFOREEND);
-
-const filmContentComponent = new FilmsContentView();
-render(siteMainElement, filmContentComponent.element, RenderPosition.BEFOREEND);
-
-const filmsListComponent = new FilmsListView();
-render(filmContentComponent.element, filmsListComponent.element, RenderPosition.BEFOREEND);
-
-const filmsListContainerComponent = new FilmsListContainerView();
-render(filmsListComponent.element, filmsListContainerComponent.element, RenderPosition.BEFOREEND);
-
 render(siteFooterStatisticElement, new FooterStatisticView(films.length).element, RenderPosition.BEFOREEND);
 
 const removePopup = () => {
@@ -104,46 +94,71 @@ const renderFilm = (filmContainerElement, film) => {
   render(filmContainerElement, filmComponent.element, RenderPosition.BEFOREEND);
 };
 
-for (let i = 0; i < Math.min(films.length, Films.COUNT_PER_STEP); i++) {
-  renderFilm(filmsListContainerComponent.element, films[i]);
-}
+const renderFilmList = (mainContainer, listFilms) => {
+  const filmContentComponent = new FilmsContentView();
+  render(mainContainer, filmContentComponent.element, RenderPosition.BEFOREEND);
 
-const mostCommentedComponent = new MostCommentedView();
-const filmsListContainerMostComponent = new FilmsListContainerView();
+  const filmsListComponent = new FilmsListView();
+  render(filmContentComponent.element, filmsListComponent.element, RenderPosition.BEFOREEND);
 
-render(mostCommentedComponent.element, filmsListContainerMostComponent.element, RenderPosition.BEFOREEND);
-render(filmsListComponent.element, mostCommentedComponent.element, RenderPosition.AFTEREND);
+  const noFilmComponent = new NoFilmView(filters[0]);
+  render(filmsListComponent.element, noFilmComponent.element, RenderPosition.BEFOREEND);
 
-const topRateComponent = new TopRateView();
-const filmsListContainerTopComponent = new FilmsListContainerView();
+  if (!listFilms.length) {
+    noFilmComponent.element.classList.remove('visually-hidden');
+  } else {
+    noFilmComponent.element.classList.add('visually-hidden');
 
-render(topRateComponent.element, filmsListContainerTopComponent.element, RenderPosition.BEFOREEND);
-render(filmsListComponent.element, topRateComponent.element, RenderPosition.AFTEREND);
+    render(mainContainer.querySelector('.main-navigation'), new SortMenuView().element, RenderPosition.AFTEREND);
 
-for (let i = 0; i < Films.COUNT_RATED; i++) {
-  renderFilm(filmsListContainerMostComponent.element, films[i]);
-}
+    const filmsListContainerComponent = new FilmsListContainerView();
+    render(filmsListComponent.element, filmsListContainerComponent.element, RenderPosition.BEFOREEND);
 
-for (let i = 0; i < Films.COUNT_RATED; i++) {
-  renderFilm(filmsListContainerTopComponent.element, films[i]);
-}
-
-if (films.length > Films.COUNT_PER_STEP) {
-  let renderedFilmCount = Films.COUNT_PER_STEP;
-
-  const showMoreButton = new ShowMoreButtonView();
-
-  render(filmsListComponent.element, showMoreButton.element, RenderPosition.BEFOREEND);
-
-  showMoreButton.element.addEventListener('click', (evt) => {
-    evt.preventDefault();
-    films
-      .slice(renderedFilmCount, renderedFilmCount + Films.COUNT_PER_STEP)
-      .forEach((film) => renderFilm(filmsListContainerComponent.element, film));
-    renderedFilmCount += Films.COUNT_PER_STEP;
-
-    if (renderedFilmCount >= films.length) {
-      showMoreButton.remove();
+    for (let i = 0; i < Math.min(listFilms.length, Films.COUNT_PER_STEP); i++) {
+      renderFilm(filmsListContainerComponent.element, films[i]);
     }
-  });
-}
+
+    const mostCommentedComponent = new MostCommentedView();
+    const filmsListContainerMostComponent = new FilmsListContainerView();
+
+    render(mostCommentedComponent.element, filmsListContainerMostComponent.element, RenderPosition.BEFOREEND);
+    render(filmsListComponent.element, mostCommentedComponent.element, RenderPosition.AFTEREND);
+
+    const topRateComponent = new TopRateView();
+    const filmsListContainerTopComponent = new FilmsListContainerView();
+
+    render(topRateComponent.element, filmsListContainerTopComponent.element, RenderPosition.BEFOREEND);
+    render(filmsListComponent.element, topRateComponent.element, RenderPosition.AFTEREND);
+
+    for (let i = 0; i < Films.COUNT_RATED; i++) {
+      renderFilm(filmsListContainerMostComponent.element, films[i]);
+    }
+
+    for (let i = 0; i < Films.COUNT_RATED; i++) {
+      renderFilm(filmsListContainerTopComponent.element, films[i]);
+    }
+
+    if (listFilms.length > Films.COUNT_PER_STEP) {
+      let renderedFilmCount = Films.COUNT_PER_STEP;
+
+      const showMoreButton = new ShowMoreButtonView();
+
+      render(filmsListComponent.element, showMoreButton.element, RenderPosition.BEFOREEND);
+
+      showMoreButton.element.addEventListener('click', (evt) => {
+        evt.preventDefault();
+        listFilms
+          .slice(renderedFilmCount, renderedFilmCount + Films.COUNT_PER_STEP)
+          .forEach((film) => renderFilm(filmsListContainerComponent.element, film));
+        renderedFilmCount += Films.COUNT_PER_STEP;
+
+        if (renderedFilmCount >= listFilms.length) {
+          showMoreButton.element.remove();
+        }
+      });
+    }
+  }
+};
+
+renderFilmList(siteMainElement, films);
+

@@ -6,7 +6,7 @@ const getCountItemTemplate = (count) => `<span class="main-navigation__item-coun
 const createFilterItemTemplate = (filter, isFirst) => {
   const {name, count} = filter;
 
-  return  `<a href="#${name}" class="main-navigation__item">
+  return  `<a href="#${name}" class="main-navigation__item ${isFirst ? 'main-navigation__item--active' : ''}">
             ${toCapitalizeLetter(name)} ${isFirst ? 'movies' : ''} ${!isFirst ? getCountItemTemplate(count) : ''}
           </a>
           `;
