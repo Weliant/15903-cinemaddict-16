@@ -1,4 +1,5 @@
 import {getHours, getRemainingMinutes, getTopGenre} from '../utils.js';
+import {createElement} from '../render.js';
 
 const createUserRankTemplate = (user) => {
   const {rank, avatar} = user;
@@ -62,3 +63,30 @@ export const createStatisticInfoTemplate = (films, user) => {
           </section>
           `;
 };
+
+export default class StatisticInfoView {
+  #element = null;
+  #films = null;
+  #user = null;
+
+  constructor(films, user){
+    this.#films = films;
+    this.#user = user;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createStatisticInfoTemplate(this.#films, this.#user);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}

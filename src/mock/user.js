@@ -1,17 +1,14 @@
-const URL_AVATAR = 'images';
-const RANK = ['novice', 'fan', 'movie-buff'];
-const RANK_RANGE = 10;
+import {Rank, URL_AVATAR} from '../consts.js';
 
 const userRank = new Map();
 const fromValue = 1;
 
-for (let i = 0; i < RANK.length; i++) {
-  const countFilms = fromValue + RANK_RANGE*i;
-  userRank.set(countFilms, RANK[i]);
+for (let i = 0; i < Rank.STATUS.length; i++) {
+  const countFilms = fromValue + Rank.RANGE*i;
+  userRank.set(countFilms, Rank.STATUS[i]);
 }
-
 const getRank = (films) => {
-  const countWatchedFilms = films.filter((film) => film.isWatched).length;
+  const countWatchedFilms = films.filter((film) => film.userDetails.alreadyWatched).length;
   let rank = '';
 
   if(countWatchedFilms) {

@@ -1,30 +1,30 @@
 import dayjs from 'dayjs';
 import {getTimesFormatted} from '../utils.js';
+import {createElement} from '../render.js';
+import {MAX_LENGTH} from '../consts.js';
 
-const MAX_LENGTH = 140;
+const createFilmCardTemplate = (film) => {
+  const {filmInfo, comments} = film;
 
-export const createFilmCardTemplate = (film) => {
-  const {name, rating, date, duration, genres, poster, description, comments} = film;
-
-  const year = dayjs(date).format('YYYY');
+  const year = dayjs(filmInfo.release.date).format('YYYY');
   let cutDescription = '';
 
-  if (description.length > 140) {
-    cutDescription = `${description.slice(0, MAX_LENGTH)}...`;
+  if (filmInfo.description.length > 140) {
+    cutDescription = `${filmInfo.description.slice(0, MAX_LENGTH)}...`;
   } else {
-    cutDescription = description;
+    cutDescription = filmInfo.description;
   }
 
   return `<article class="film-card">
             <a class="film-card__link">
-              <h3 class="film-card__title">${name}</h3>
-              <p class="film-card__rating">${rating}</p>
+              <h3 class="film-card__title">${filmInfo.title}</h3>
+              <p class="film-card__rating">${filmInfo.totalRating}</p>
               <p class="film-card__info">
                 <span class="film-card__year">${year}</span>
-                <span class="film-card__duration">${getTimesFormatted(duration)}</span>
-                <span class="film-card__genre">${genres.join(', ')}</span>
+                <span class="film-card__duration">${getTimesFormatted(filmInfo.runtime)}</span>
+                <span class="film-card__genre">${filmInfo.genre.join(', ')}</span>
               </p>
-              <img src="${poster}" alt="" class="film-card__poster">
+              <img src="${filmInfo.poster}" alt="" class="film-card__poster">
               <p class="film-card__description">${cutDescription}</p>
               <span class="film-card__comments">${comments.length} comments</span>
             </a>
@@ -36,3 +36,28 @@ export const createFilmCardTemplate = (film) => {
           </article>
         `;
 };
+
+export default class FilmCardView {
+  #element = null;
+  #film = null;
+
+  constructor(film){
+    this.#film = film;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createFilmCardTemplate(this.#film);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}
