@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import {GENRES} from './const.js';
+import {GENRES} from './consts.js';
 
 // Источник - https://github.com/you-dont-need/You-Dont-Need-Lodash-Underscore#_random
 export const getRandomInteger = (a = 0, b = 1) => {

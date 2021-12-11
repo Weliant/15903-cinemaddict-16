@@ -1,24 +1,26 @@
-const createFilmDetailsCommentItemTemplate = (comment) => {
-  const {message, emoji, author, date} = comment;
+import {createElement} from '../render.js';
+
+const createFilmDetailsCommentItemTemplate = (data) => {
+  const {comment, emotion, author, date} = data;
 
   return   `
-          <li class="film-details__comment">
-          <span class="film-details__comment-emoji">
-            <img src="./images/emoji/${emoji}.png" width="55" height="55" alt="emoji-smile">
-          </span>
-          <div>
-            <p class="film-details__comment-text">${message}</p>
-            <p class="film-details__comment-info">
-              <span class="film-details__comment-author">${author}</span>
-              <span class="film-details__comment-day">${date}</span>
-              <button class="film-details__comment-delete">Delete</button>
-            </p>
-          </div>
-        </li>
+            <li class="film-details__comment">
+            <span class="film-details__comment-emoji">
+              <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-smile">
+            </span>
+            <div>
+              <p class="film-details__comment-text">${comment}</p>
+              <p class="film-details__comment-info">
+                <span class="film-details__comment-author">${author}</span>
+                <span class="film-details__comment-day">${date}</span>
+                <button class="film-details__comment-delete">Delete</button>
+              </p>
+            </div>
+          </li>
         `;
 };
 
-export const createFilmDetailsCommentTemplate = (comments) => {
+const createFilmDetailsCommentTemplate = (comments) => {
   const commentItemsTemplate = comments
     .map((comment) => createFilmDetailsCommentItemTemplate(comment))
     .join('');
@@ -27,3 +29,28 @@ export const createFilmDetailsCommentTemplate = (comments) => {
             ${commentItemsTemplate}
           </ul>`;
 };
+
+export default class FilmDetailsCommentView {
+  #element = null;
+  #comments = null;
+
+  constructor(comments){
+    this.#comments = comments;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createFilmDetailsCommentTemplate(this.#comments);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}

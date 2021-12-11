@@ -1,8 +1,13 @@
 import {createElement} from '../render.js';
 
-const createFilmsContentTemplate = () => '<section class="films"></section>';
+const createMostCommentedTemplate = () => (
+  ` <section class="films-list films-list--extra">
+      <h2 class="films-list__title">Most commented</h2>
+    </section>
+  `
+);
 
-export default class FilmsContentView {
+export default class MostCommentedView {
   #element = null;
 
   get element() {
@@ -14,7 +19,7 @@ export default class FilmsContentView {
   }
 
   get template() {
-    return createFilmsContentTemplate();
+    return createMostCommentedTemplate();
   }
 
   removeElement() {

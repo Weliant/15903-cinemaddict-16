@@ -1,8 +1,13 @@
 import {createElement} from '../render.js';
 
-const createFilmsContentTemplate = () => '<section class="films"></section>';
+export const createTopTemplate = () => (
+  ` <section class="films-list films-list--extra">
+      <h2 class="films-list__title">Top rated</h2>
+    </section>
+  `
+);
 
-export default class FilmsContentView {
+export default class TopRateView {
   #element = null;
 
   get element() {
@@ -14,7 +19,7 @@ export default class FilmsContentView {
   }
 
   get template() {
-    return createFilmsContentTemplate();
+    return createTopTemplate();
   }
 
   removeElement() {

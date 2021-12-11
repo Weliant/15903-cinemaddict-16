@@ -1,13 +1,13 @@
-export const createFilmDetailsPopupTemplate = (comments) => (
+import {createElement} from '../render.js';
+
+const createFilmDetailsPopupTemplate = (comments) => (
   `<section class="film-details">
     <form class="film-details__inner" action="" method="get">
       <div class="film-details__top-container">
         <div class="film-details__close">
           <button class="film-details__close-btn" type="button">close</button>
         </div>
-        <div class="film-details__info-wrap">
-
-        </div>
+        <div class="film-details__info-wrap"></div>
 
         <section class="film-details__controls">
           <button type="button" class="film-details__control-button film-details__control-button--watchlist" id="watchlist" name="watchlist">Add to watchlist</button>
@@ -27,3 +27,28 @@ export const createFilmDetailsPopupTemplate = (comments) => (
   </section>
   `
 );
+
+export default class FilmDetailsPopupView {
+  #element = null;
+  #comments = null;
+
+  constructor(comments){
+    this.#comments = comments;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createFilmDetailsPopupTemplate(this.#comments);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}
