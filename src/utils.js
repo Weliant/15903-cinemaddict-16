@@ -71,3 +71,5 @@ export const getTopGenre = (films) => {
 
 export const toCapitalizeLetter = (str) => str[0].toUpperCase() + str.slice(1);
 
+export const isEscPressed = (evt) => evt.key === 'Escape' || evt.key === 'Esc';
+

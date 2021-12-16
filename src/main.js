@@ -3,7 +3,6 @@ import FilterView from './view/filter-view.js';
 import SortMenuView from './view/sort-menu-view.js';
 import FilmsContentView from './view/films-content-view.js';
 import FilmsListView from './view/films-list-view.js';
-import NoFilmView from './view/no-film-view.js';
 import FilmsListContainerView from './view/films-container-view.js';
 import TopRateView from './view/top-rate-view.js';
 import MostCommentedView from './view/most-commented-view.js';
@@ -21,6 +20,7 @@ import {generateFilm} from './mock/film.js';
 import {generateFilter} from './mock/filter.js';
 import {generateUser} from './mock/user.js';
 import {Films} from './consts.js';
+import {isEscPressed} from './utils.js';
 
 const films = Array.from({length: Films.COUNT}, generateFilm);
 const filters = generateFilter(films);
@@ -49,7 +49,7 @@ const removePopup = () => {
 };
 
 const onEscKeyDown = (evt) => {
-  if (evt.key === 'Escape' || evt.key === 'Esc') {
+  if (isEscPressed(evt)) {
     evt.preventDefault();
     removePopup();
     document.removeEventListener('keydown', onEscKeyDown);
@@ -98,16 +98,15 @@ const renderFilmList = (mainContainer, listFilms) => {
   const filmContentComponent = new FilmsContentView();
   render(mainContainer, filmContentComponent.element, RenderPosition.BEFOREEND);
 
-  const filmsListComponent = new FilmsListView();
+  const filmsListComponent = new FilmsListView(filters[0]);
   render(filmContentComponent.element, filmsListComponent.element, RenderPosition.BEFOREEND);
 
-  const noFilmComponent = new NoFilmView(filters[0]);
-  render(filmsListComponent.element, noFilmComponent.element, RenderPosition.BEFOREEND);
+  const noFilmComponent = filmsListComponent.element.querySelector('.films-list__title');
 
   if (!listFilms.length) {
-    noFilmComponent.element.classList.remove('visually-hidden');
+    noFilmComponent.classList.remove('visually-hidden');
   } else {
-    noFilmComponent.element.classList.add('visually-hidden');
+    noFilmComponent.classList.add('visually-hidden');
 
     render(mainContainer.querySelector('.main-navigation'), new SortMenuView().element, RenderPosition.AFTEREND);
 
