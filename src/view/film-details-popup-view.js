@@ -1,11 +1,10 @@
-import {createElement} from '../render.js';
+import AbstractView from './abstract-view.js';
 
 const createFilmDetailsPopupTemplate = (comments) => (
   `<section class="film-details">
     <form class="film-details__inner" action="" method="get">
       <div class="film-details__top-container">
         <div class="film-details__close">
-          <button class="film-details__close-btn" type="button">close</button>
         </div>
         <div class="film-details__info-wrap"></div>
 
@@ -28,27 +27,15 @@ const createFilmDetailsPopupTemplate = (comments) => (
   `
 );
 
-export default class FilmDetailsPopupView {
-  #element = null;
+export default class FilmDetailsPopupView extends AbstractView {
   #comments = null;
 
   constructor(comments){
+    super();
     this.#comments = comments;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return createFilmDetailsPopupTemplate(this.#comments);
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

@@ -1,5 +1,5 @@
-import {getHours, getRemainingMinutes, getTopGenre} from '../utils.js';
-import {createElement} from '../render.js';
+import AbstractView from './abstract-view.js';
+import {getHours, getRemainingMinutes, getTopGenre} from '../utils/film.js';
 
 const createUserRankTemplate = (user) => {
   const {rank, avatar} = user;
@@ -64,29 +64,17 @@ export const createStatisticInfoTemplate = (films, user) => {
           `;
 };
 
-export default class StatisticInfoView {
-  #element = null;
+export default class StatisticInfoView extends AbstractView {
   #films = null;
   #user = null;
 
   constructor(films, user){
+    super();
     this.#films = films;
     this.#user = user;
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
   get template() {
     return createStatisticInfoTemplate(this.#films, this.#user);
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

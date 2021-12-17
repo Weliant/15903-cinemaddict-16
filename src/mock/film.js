@@ -1,4 +1,5 @@
-import {getRandomInteger, generateData, generateDataArray, getRandomPositiveFloat} from './../utils.js';
+import {getRandomInteger, getRandomPositiveFloat} from './../utils/common.js';
+import {generateData, generateDataArray} from './../utils/film';
 import {generateComment} from './comment.js';
 import {GENRES} from '../consts.js';
 
