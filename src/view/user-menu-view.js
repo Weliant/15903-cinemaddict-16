@@ -1,4 +1,4 @@
-import {createElement} from '../render.js';
+import AbstractView from './abstract-view.js';
 
 const createUserMenuTemplate = (user) => {
   const {rank, avatar} = user;
@@ -10,27 +10,15 @@ const createUserMenuTemplate = (user) => {
           `;
 };
 
-export default class UserMenuView {
-  #element = null;
+export default class UserMenuView extends AbstractView {
   #user = null;
 
   constructor(user){
+    super();
     this.#user = user;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return createUserMenuTemplate(this.#user);
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

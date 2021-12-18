@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
-import {getTimesFormatted} from '../utils.js';
-import {createElement} from '../render.js';
+import AbstractView from './abstract-view.js';
+import {getTimesFormatted} from '../utils/film.js';
 
 const genreItem = (item) => `<span class="film-details__genre">${item}</span>`;
 
@@ -69,27 +69,15 @@ const createFilmDetailsInfoTemplate = (film) => {
         `;
 };
 
-export default class FilmDetailsInfoView {
-  #element = null;
+export default class FilmDetailsInfoView extends AbstractView {
   #film = null;
 
   constructor(film){
+    super();
     this.#film = film;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return createFilmDetailsInfoTemplate(this.#film);
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

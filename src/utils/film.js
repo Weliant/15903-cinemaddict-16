@@ -1,23 +1,6 @@
 import dayjs from 'dayjs';
-import {GENRES} from './consts.js';
-
-// Источник - https://github.com/you-dont-need/You-Dont-Need-Lodash-Underscore#_random
-export const getRandomInteger = (a = 0, b = 1) => {
-  const lower = Math.ceil(Math.min(a, b));
-  const upper = Math.floor(Math.max(a, b));
-
-  return Math.floor(lower + Math.random() * (upper - lower + 1));
-};
-
-// Функция взята из интернета и доработана
-// Источник - https://github.com/you-dont-need/You-Dont-Need-Lodash-Underscore#_random
-export const getRandomPositiveFloat = (a, b, digits = 1) => {
-  const lower = Math.min(Math.abs(a), Math.abs(b));
-  const upper = Math.max(Math.abs(a), Math.abs(b));
-  const result = Math.random() * (upper - lower) + lower;
-
-  return result.toFixed(digits);
-};
+import {GENRES} from '../consts.js';
+import {getRandomInteger} from './common.js';
 
 export const generateData = (array) => {
   const randomIndex = getRandomInteger(0, array.length - 1);
@@ -70,4 +53,3 @@ export const getTopGenre = (films) => {
 };
 
 export const toCapitalizeLetter = (str) => str[0].toUpperCase() + str.slice(1);
-

@@ -1,23 +1,23 @@
-import {createElement} from '../render.js';
+import AbstractView from './abstract-view.js';
+import {textMessage} from '../consts.js';
 
-const createFilmsListTemplate = () => ' <section class="films-list"></section>';
+const createFilmsListTemplate = (filter) => {
+  const text = textMessage[filter.name.toUpperCase()];
 
-export default class FilmsListView {
-  #element = null;
+  return `<section class="films-list">
+            <h2 class="films-list__title visually-hidden">${text}</h2>
+          </section>`;
+};
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
+export default class FilmsListView extends AbstractView {
+  #filter = null;
 
-    return this.#element;
+  constructor(filter){
+    super();
+    this.#filter = filter;
   }
 
   get template() {
-    return createFilmsListTemplate();
-  }
-
-  removeElement() {
-    this.#element = null;
+    return createFilmsListTemplate(this.#filter);
   }
 }

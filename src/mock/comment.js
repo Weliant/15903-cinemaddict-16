@@ -1,4 +1,4 @@
-import {generateData, getFullDate} from './../utils.js';
+import {generateData, getFullDate} from './../utils/film.js';
 
 const messages = ['Interesting setting and a good cast', 'Booooooooooring', 'Very very old. Meh', 'Almost two hours? Seriously?'];
 const emotions = ['smile', 'sleeping', 'puke', 'angry'];

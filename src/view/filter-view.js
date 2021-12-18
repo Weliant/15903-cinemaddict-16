@@ -1,5 +1,5 @@
-import {toCapitalizeLetter} from '../utils.js';
-import {createElement} from '../render.js';
+import {toCapitalizeLetter} from '../utils/film.js';
+import AbstractView from './abstract-view.js';
 
 const getCountItemTemplate = (count) => `<span class="main-navigation__item-count">${count}</span>`;
 
@@ -25,27 +25,15 @@ const createFilterTemplate = (filterItems) => {
           </nav>`;
 };
 
-export default class FilterView {
-  #element = null;
+export default class FilterView extends AbstractView {
   #filter = null;
 
   constructor(filter){
+    super();
     this.#filter = filter;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return createFilterTemplate(this.#filter);
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }
