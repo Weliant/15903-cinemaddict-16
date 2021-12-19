@@ -102,11 +102,9 @@ const renderFilmList = (mainContainer, listFilms) => {
 
   const noFilmComponent = filmsListComponent.element.querySelector('.films-list__title');
 
-  if (!listFilms.length) {
-    noFilmComponent.classList.remove('visually-hidden');
-  } else {
-    noFilmComponent.classList.add('visually-hidden');
+  noFilmComponent.classList[!listFilms.length ? 'remove' : 'add']('visually-hidden');
 
+  if (listFilms.length) {
     render(mainContainer.querySelector('.main-navigation'), new SortMenuView(), RenderPosition.AFTEREND);
 
     const filmsListContainerComponent = new FilmsListContainerView();
