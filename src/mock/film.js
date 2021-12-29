@@ -2,6 +2,7 @@ import {getRandomInteger, getRandomPositiveFloat} from './../utils/common.js';
 import {generateData, generateDataArray} from './../utils/film';
 import {generateComment} from './comment.js';
 import {GENRES} from '../consts.js';
+import {nanoid} from 'nanoid';
 
 const MAX_COUNT = 5;
 const URL_POSTERS = './images/posters';
@@ -51,6 +52,7 @@ export const generateFilm = () => {
   const resultURL = urls.filter((item) => regExpURL.test(item));
 
   return {
+    id: nanoid(),
     comments: generateComments(),
     filmInfo: {
       title: name,
