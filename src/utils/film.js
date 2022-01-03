@@ -53,3 +53,13 @@ export const getTopGenre = (films) => {
 };
 
 export const toCapitalizeLetter = (str) => str[0].toUpperCase() + str.slice(1);
+
+export const sortFilmDate = (filmA, filmB) => {
+  const yearA = dayjs(filmA.filmInfo.release.date).get('year');
+  const yearB = dayjs(filmB.filmInfo.release.date).get('year');
+  return +yearB - +yearA;
+};
+
+export const sortFilmRating = (filmA, filmB) => +filmB.filmInfo.totalRating - +filmA.filmInfo.totalRating;
+
+export const sortFilmMostCommented = (filmA, filmB) => filmB.comments.length - filmA.comments.length;

@@ -34,6 +34,7 @@ const movieTitles = [
 const directors = ['Christopher Nolan', 'Anthony Mann', 'Steven Spielberg'];
 const writers = ['Anne Wigton', 'Heinz Herald', 'Richard Weil'];
 const actors = ['Erich von Stroheim', 'Mary Beth Hughes', 'Dan Duryea'];
+const years = ['2019-05-11T00:00:00.000Z', '1945-03-30T00:00:00.000Z',  '1929-05-15T00:00:00.000Z'];
 const ageRatings = ['18+', '16+', '12+'];
 const country = ['USA', 'Austria', 'Germany', 'Finland'];
 const text = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras aliquet varius magna, non porta ligula feugiat eget. Fusce tristique felis at fermentum pharetra. Aliquam id orci ut lectus varius viverra. Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante. Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum. Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui. Sed sed nisi sed augue convallis suscipit in sed felis. Aliquam erat volutpat. Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus.';
@@ -64,7 +65,7 @@ export const generateFilm = () => {
       writers: generateDataArray(1, writers),
       actors: generateDataArray(1, actors),
       release: {
-        date: '2019-05-11T00:00:00.000Z',
+        date: generateData(years),
         releaseCountry: generateData(country)
       },
       runtime: getRandomInteger(MIN_DURATION_IN_MINUTES, MAX_DURATION_IN_MINUTES),

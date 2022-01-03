@@ -24,7 +24,7 @@ export default class MoviePresenter {
     this.#changeData = changeData;
   }
 
-  init = (film, type = '') => {
+  init = (film, isUpdate = false, container = '') => {
     this.#film = film;
 
     this.#filmDetailsPopupContainerComponent = this.#bodyElement.querySelector('.film-details');
@@ -32,24 +32,17 @@ export default class MoviePresenter {
     const selectorPopup = `.film-details__inner[data-id="${this.#film.id}"]`;
     const filmsPopup = this.#filmDetailsPopupContainerComponent.querySelector(selectorPopup);
 
-    if (type) {
+    if (isUpdate) {
       const selectorCard = `.film-card[data-id="${this.#film.id}"]`;
-      const filmsCards = this.#bodyElement.querySelectorAll(selectorCard);
-      let isHasIndex = -1;
+      const filmCard = container.element.querySelector(selectorCard);
 
-      Array.from(filmsCards).forEach((element, index) => {
-        if (element.dataset.id === this.#film.id) {
+      if (filmCard.dataset.id === this.#film.id) {
 
-          this.#createNewFilmComponent();
+        this.#createNewFilmComponent();
 
-          isHasIndex = index;
-
-          if (isHasIndex > -1) {
-            const el = filmsCards[isHasIndex];
-            replace(this.#filmComponent, el);
-          }
-        }
-      });
+        const el = filmCard;
+        replace(this.#filmComponent, el);
+      }
     } else {
       this.#createNewFilmComponent();
       render(this.#filmListContainer, this.#filmComponent, RenderPosition.BEFOREEND);
