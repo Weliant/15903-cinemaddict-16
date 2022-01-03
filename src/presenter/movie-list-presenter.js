@@ -43,17 +43,15 @@ export default class MovieListPresenter {
 
   #renderedFilmCount = Films.COUNT_PER_STEP;
 
-  constructor(filmsContainer, films, filters) {
+  constructor(filmsContainer) {
     this.#filmsContainer = filmsContainer;
+  }
 
+  init = (films, filters) => {
     this.#films = [...films];
     this.#filters = [...filters];
     this.#sourcedFilms = [...films];
 
-    this.init();
-  }
-
-  init = () => {
     this.#filmsListComponent = new FilmsListView(this.#filters[0]);
     this.#noFilmComponent = this.#filmsListComponent.element.querySelector('.films-list__title');
 
