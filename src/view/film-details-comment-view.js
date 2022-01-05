@@ -1,7 +1,7 @@
-import AbstractView from './abstract-view.js';
+import SmartView from './smart-view.js';
 
 const createFilmDetailsCommentItemTemplate = (data) => {
-  const {comment, emotion, author, date} = data;
+  const {id, comment, emotion, author, date} = data;
 
   return   `
             <li class="film-details__comment">
@@ -13,7 +13,7 @@ const createFilmDetailsCommentItemTemplate = (data) => {
               <p class="film-details__comment-info">
                 <span class="film-details__comment-author">${author}</span>
                 <span class="film-details__comment-day">${date}</span>
-                <button class="film-details__comment-delete">Delete</button>
+                <button class="film-details__comment-delete" data-id="${id}">Delete</button>
               </p>
             </div>
           </li>
@@ -30,7 +30,7 @@ const createFilmDetailsCommentTemplate = (comments) => {
           </ul>`;
 };
 
-export default class FilmDetailsCommentView extends AbstractView {
+export default class FilmDetailsCommentView extends SmartView {
   #comments = null;
 
   constructor(comments){
@@ -40,5 +40,17 @@ export default class FilmDetailsCommentView extends AbstractView {
 
   get template() {
     return createFilmDetailsCommentTemplate(this.#comments);
+  }
+
+  setDeleteClickHandler = (callback) => {
+    this._callback.deleteClick = callback;
+    this.element.addEventListener('click', this.#buttonDeleteClickHandler);
+  }
+
+  #buttonDeleteClickHandler = (evt) => {
+    evt.preventDefault();
+    if (evt.target.classList.contains('film-details__comment-delete')){
+      this._callback.deleteClick(evt.target.dataset.id);
+    }
   }
 }

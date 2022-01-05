@@ -1,13 +1,12 @@
-import dayjs from 'dayjs';
-import AbstractView from './abstract-view.js';
-import {getTimesFormatted} from '../utils/film.js';
+import SmartView from './smart-view.js';
+import {getTimesFormatted, getReleaseDate} from '../utils/film.js';
 
 const genreItem = (item) => `<span class="film-details__genre">${item}</span>`;
 
 const createGenreItemTemplate = (genres) => {
-  const genreItemsTemplate = genres
+  const genreItemsTemplate = genres.length > 1 ? genres
     .map((filter, index) => genreItem(filter, index === 0))
-    .join('');
+    .join('') : genres[0];
 
   return `<td class="film-details__cell">
             ${genreItemsTemplate}
@@ -15,8 +14,7 @@ const createGenreItemTemplate = (genres) => {
 };
 
 const createFilmDetailsInfoTemplate = (film) => {
-  const {filmInfo} = film;
-  const dateRelease = dayjs(filmInfo.release.date).format('D MMMM YYYY');
+  const {filmInfo, listWriters, listActors, isMultiGenre} = film;
 
   return `
         <div class="film-details__info">
@@ -38,15 +36,15 @@ const createFilmDetailsInfoTemplate = (film) => {
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Writers</td>
-              <td class="film-details__cell">${filmInfo.writers.join(', ')}</td>
+              <td class="film-details__cell">${listWriters}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Actors</td>
-              <td class="film-details__cell">${filmInfo.actors.join(', ')}</td>
+              <td class="film-details__cell">${listActors}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Release Date</td>
-              <td class="film-details__cell">${dateRelease}</td>
+              <td class="film-details__cell">${getReleaseDate(filmInfo.release.date)}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Runtime</td>
@@ -57,7 +55,7 @@ const createFilmDetailsInfoTemplate = (film) => {
               <td class="film-details__cell">${filmInfo.release.releaseCountry}</td>
             </tr>
             <tr class="film-details__row">
-              <td class="film-details__term">Genres</td>
+              <td class="film-details__term">${isMultiGenre ? 'Genres' : 'Genre'} </td>
               ${createGenreItemTemplate(filmInfo.genre)}
             </tr>
           </table>
@@ -69,15 +67,19 @@ const createFilmDetailsInfoTemplate = (film) => {
         `;
 };
 
-export default class FilmDetailsInfoView extends AbstractView {
-  #film = null;
-
+export default class FilmDetailsInfoView extends SmartView {
   constructor(film){
     super();
-    this.#film = film;
+    this._data = FilmDetailsInfoView.parseTaskToData(film);
   }
 
   get template() {
-    return createFilmDetailsInfoTemplate(this.#film);
+    return createFilmDetailsInfoTemplate(this._data);
   }
+
+  static parseTaskToData = (film) => ({...film,
+    isMultiGenre: film.filmInfo.genre.length > 1,
+    listWriters: film.filmInfo.writers.join(', '),
+    listActors: film.filmInfo.actors.join(', '),
+  });
 }
