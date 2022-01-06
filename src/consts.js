@@ -9,3 +9,9 @@ export const textMessage = {
 };
 export const URL_AVATAR = 'images';
 export const MAX_LENGTH = 140;
+
+export const SortType = {
+  DEFAULT: 'default',
+  DATE: 'date',
+  RATING: 'rating',
+};
