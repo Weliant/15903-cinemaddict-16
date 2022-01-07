@@ -18,9 +18,7 @@ const siteMainElement = bodyElement.querySelector('.main');
 const siteHeaderElement = bodyElement.querySelector('.header');
 const siteFooterStatisticElement = bodyElement.querySelector('.footer .footer__statistics');
 
-const movieListPresenter = new MovieListPresenter(siteMainElement);
-
-movieListPresenter.init(films, filters);
+new MovieListPresenter(siteMainElement, films, filters);
 
 if (user.rank) {
   render(siteHeaderElement, new UserMenuView(user), RenderPosition.BEFOREEND);
