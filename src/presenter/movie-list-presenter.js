@@ -8,11 +8,11 @@ import MostCommentedView from '../view/most-commented-view.js';
 import ShowMoreButtonView from '../view/show-more-button-view.js';
 import FilmDetailsPopupContainerView from '../view/film-details-popup-container-view.js';
 import {render, RenderPosition, remove} from '../utils/render.js';
-import {updateItem} from '../utils/common.js';
+import {updateItem, isEscPressed, isEnterMessagePressed} from '../utils/common.js';
 import {sortFilmDate, sortFilmRating, generateDataArray, sortFilmMostCommented} from '../utils/film.js';
 import {replace} from '../utils/render.js';
 
-import {Films, SortType, blockType} from '../consts.js';
+import {Films, SortType, BlockType} from '../consts.js';
 import MoviePresenter from './movie-presenter.js';
 
 export default class MovieListPresenter {
@@ -60,13 +60,13 @@ export default class MovieListPresenter {
     this.#renderFilmsPage();
   }
 
-  #handleFilmChange = (updatedFilm) => {
+  #handleFilmChange = (updatedFilm, comment = '', emotion = '') => {
     this.#films = updateItem(this.#films, updatedFilm);
     this.#sourcedFilms = updateItem(this.#sourcedFilms, updatedFilm);
 
-    this.#filmPresenter.get(updatedFilm.id)?.init(updatedFilm, true, this.#filmsListComponent);
-    this.#filmPresenterTop.get(updatedFilm.id)?.init(updatedFilm, true, this.#topRateComponent);
-    this.#filmPresenterMostCommented.get(updatedFilm.id)?.init(updatedFilm, true, this.#mostCommentedComponent);
+    this.#filmPresenter.get(updatedFilm.id)?.init(updatedFilm, true, this.#filmsListComponent, comment, emotion);
+    this.#filmPresenterTop.get(updatedFilm.id)?.init(updatedFilm, true, this.#topRateComponent, comment, emotion);
+    this.#filmPresenterMostCommented.get(updatedFilm.id)?.init(updatedFilm, true, this.#mostCommentedComponent, comment, emotion);
   }
 
   #renderFilter = () => {
@@ -119,13 +119,41 @@ export default class MovieListPresenter {
     render(this.#filmsContainer, this.#sortMenuComponent, RenderPosition.BEFOREEND);
   }
 
+  #addEventDocument = () => {
+    this.#bodyElement.addEventListener('keydown', this.#onKeyDown);
+  }
+
+  #removePopup = () => {
+    const filmDetailsPopupContainerComponent = this.#bodyElement.querySelector('.film-details');
+    const popupComponent = filmDetailsPopupContainerComponent.querySelector('.film-details__inner');
+    if (popupComponent){
+      filmDetailsPopupContainerComponent.removeChild(popupComponent);
+    }
+
+    if (this.#bodyElement.classList.contains('hide-overflow')) {
+      this.#bodyElement.classList.remove('hide-overflow');
+    }
+
+    this.#bodyElement.removeEventListener('keydown', this.#onKeyDown);
+  };
+
+  #onKeyDown = (evt) => {
+    if (isEscPressed(evt)) {
+      evt.preventDefault();
+      this.#removePopup();
+    }
+    else if (isEnterMessagePressed(evt)) {
+      // отправить комментарий
+    }
+  };
+
   #renderFilm = (container, film, type = '') => {
-    const filmPresenter = new MoviePresenter(container, this.#handleFilmChange);
+    const filmPresenter = new MoviePresenter(container, this.#handleFilmChange, this.#addEventDocument,this.#removePopup);
     filmPresenter.init(film);
 
-    if (type === blockType.TOP) {
+    if (type === BlockType.TOP) {
       this.#filmPresenterTop.set(film.id, filmPresenter);
-    } else if (type === blockType.COMMENTED) {
+    } else if (type === BlockType.COMMENTED) {
       this.#filmPresenterMostCommented.set(film.id, filmPresenter);
     } else {
       this.#filmPresenter.set(film.id, filmPresenter);
@@ -175,7 +203,7 @@ export default class MovieListPresenter {
 
     filmsOfHigherRating
       .slice(from, to)
-      .forEach((film) => this.#renderFilm(this.#filmsListContainerTopComponent, film, blockType.TOP));
+      .forEach((film) => this.#renderFilm(this.#filmsListContainerTopComponent, film, BlockType.TOP));
   }
 
   #renderFilmsMostCommented = (from, to) => {
@@ -201,7 +229,7 @@ export default class MovieListPresenter {
 
     filmsOfMostCommented
       .slice(from, to)
-      .forEach((film) => this.#renderFilm(this.#filmsListContainerMostComponent, film, blockType.COMMENTED));
+      .forEach((film) => this.#renderFilm(this.#filmsListContainerMostComponent, film, BlockType.COMMENTED));
   }
 
   #renderNoFilms = () => {

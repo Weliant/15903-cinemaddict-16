@@ -1,6 +1,5 @@
 import {render, RenderPosition, remove, replace} from '../utils/render.js';
 import FilmCardView from '../view/film-card-view.js';
-import {isEscPressed, isEnterMessagePressed} from '../utils/common.js';
 import FilmDetailsPopupView from '../view/film-details-popup-view.js';
 import CloseButtonView from '../view/close-button-view.js';
 import FilmDetailsPosterView from '../view/film-details-poster-view.js';
@@ -13,6 +12,9 @@ export default class MoviePresenter {
   #filmComponent = null;
   #film = null;
   #changeData = null;
+  #addEventDocument = null;
+  #removePopup = null;
+  #newCommentData = null;
 
   #bodyElement = document.querySelector('body');
   #filmDetailsPopupContainerComponent = null;
@@ -20,18 +22,24 @@ export default class MoviePresenter {
   #closeButtonComponent = null;
   #commentsComponent = null;
 
-  constructor(filmListContainer, changeData) {
+  constructor(filmListContainer, changeData, addEventDocument, removePopup) {
     this.#filmListContainer = filmListContainer;
     this.#changeData = changeData;
+    this.#addEventDocument = addEventDocument;
+    this.#removePopup = removePopup;
   }
 
-  init = (film, isUpdate = false, container = '') => {
+  init = (film, isUpdate = false, container = '', comment, emotion) => {
     this.#film = film;
 
     this.#filmDetailsPopupContainerComponent = this.#bodyElement.querySelector('.film-details');
 
     const selectorPopup = `.film-details__inner[data-id="${this.#film.id}"]`;
     const filmsPopup = this.#filmDetailsPopupContainerComponent.querySelector(selectorPopup);
+
+    if (comment || emotion) {
+      this.#newCommentData = {comment, emotion};
+    }
 
     if (isUpdate) {
       const selectorCard = `.film-card[data-id="${this.#film.id}"]`;
@@ -63,38 +71,22 @@ export default class MoviePresenter {
     this.#filmComponent.setFavoiteClickHandler(this.#favoriteClickHandler);
   }
 
-  #removePopup = () => {
-    const popupComponent = this.#filmDetailsPopupContainerComponent.querySelector('.film-details__inner');
-    if (popupComponent){
-      this.#filmDetailsPopupContainerComponent.removeChild(popupComponent);
-    }
-
-    if (this.#bodyElement.classList.contains('hide-overflow')) {
-      this.#bodyElement.classList.remove('hide-overflow');
-    }
-  };
-
-  #onKeyDown = (evt) => {
-    if (isEscPressed(evt)) {
-      evt.preventDefault();
-      this.#removePopup();
-      document.removeEventListener('keydown', this.#onKeyDown);
-    }
-    else if (isEnterMessagePressed(evt)) {
-      // отправить комментарий
-    }
-  };
-
   #watchListeClickHandler = () => {
-    this.#changeData({...this.#film, userDetails: {...this.#film.userDetails, watchlist: !this.#film.userDetails.watchlist}});
+    const textComment = document.querySelector('.film-details__comment-input').value;
+    const emotion = document.querySelector('.film-details__add-emoji-label').dataset.emotion;
+    this.#changeData({...this.#film, userDetails: {...this.#film.userDetails, watchlist: !this.#film.userDetails.watchlist}}, textComment, emotion);
   }
 
   #warchedClickHandler = () => {
-    this.#changeData({...this.#film, userDetails: {...this.#film.userDetails, alreadyWatched: !this.#film.userDetails.alreadyWatched}});
+    const textComment = document.querySelector('.film-details__comment-input').value;
+    const emotion = document.querySelector('.film-details__add-emoji-label').dataset.emotion;
+    this.#changeData({...this.#film, userDetails: {...this.#film.userDetails, alreadyWatched: !this.#film.userDetails.alreadyWatched}}, textComment, emotion);
   }
 
   #favoriteClickHandler = () => {
-    this.#changeData({...this.#film, userDetails: {...this.#film.userDetails, favorite: !this.#film.userDetails.favorite}});
+    const textComment = document.querySelector('.film-details__comment-input').value;
+    const emotion = document.querySelector('.film-details__add-emoji-label').dataset.emotion;
+    this.#changeData({...this.#film, userDetails: {...this.#film.userDetails, favorite: !this.#film.userDetails.favorite}}, textComment, emotion);
   }
 
   #openPopupClickHandler = () => {
@@ -112,7 +104,7 @@ export default class MoviePresenter {
     siteFilmDetailsElement.appendChild(new FilmDetailsPosterView(this.#film).element);
     siteFilmDetailsElement.appendChild(new FilmDetailsInfoView(this.#film).element);
     siteFilmDetailsCommentsWrapElement.appendChild(this.#commentsComponent.element);
-    siteFilmDetailsCommentsWrapElement.appendChild(new FilmDetailsCommentNewView().element);
+    siteFilmDetailsCommentsWrapElement.appendChild(new FilmDetailsCommentNewView(this.#newCommentData).element);
     buttonCloseElement.appendChild(this.#closeButtonComponent.element);
 
     if (this.#filmDetailsPopupComponent) {
@@ -123,10 +115,9 @@ export default class MoviePresenter {
     this.#filmDetailsPopupComponent.setWatchedClickHandler(this.#warchedClickHandler);
     this.#filmDetailsPopupComponent.setFavoiteClickHandler(this.#favoriteClickHandler);
 
-    document.addEventListener('keydown', this.#onKeyDown);
+    this.#addEventDocument();
 
     this.#closeButtonComponent.setCloseClickHandler(() => {
-      document.removeEventListener('keydown', this.#onKeyDown);
       this.#removePopup();
     });
 
