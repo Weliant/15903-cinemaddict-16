@@ -12,7 +12,7 @@ import {updateItem} from '../utils/common.js';
 import {sortFilmDate, sortFilmRating, generateDataArray, sortFilmMostCommented} from '../utils/film.js';
 import {replace} from '../utils/render.js';
 
-import {Films, SortType} from '../consts.js';
+import {Films, SortType, blockType} from '../consts.js';
 import MoviePresenter from './movie-presenter.js';
 
 export default class MovieListPresenter {
@@ -43,15 +43,17 @@ export default class MovieListPresenter {
 
   #renderedFilmCount = Films.COUNT_PER_STEP;
 
-  constructor(filmsContainer) {
+  constructor(filmsContainer, films, filters) {
     this.#filmsContainer = filmsContainer;
-  }
 
-  init = (films, filters) => {
     this.#films = [...films];
     this.#filters = [...filters];
     this.#sourcedFilms = [...films];
 
+    this.init();
+  }
+
+  init = () => {
     this.#filmsListComponent = new FilmsListView(this.#filters[0]);
     this.#noFilmComponent = this.#filmsListComponent.element.querySelector('.films-list__title');
 
@@ -121,9 +123,9 @@ export default class MovieListPresenter {
     const filmPresenter = new MoviePresenter(container, this.#handleFilmChange);
     filmPresenter.init(film);
 
-    if (type === 'top') {
+    if (type === blockType.TOP) {
       this.#filmPresenterTop.set(film.id, filmPresenter);
-    } else if (type === 'commented') {
+    } else if (type === blockType.COMMENTED) {
       this.#filmPresenterMostCommented.set(film.id, filmPresenter);
     } else {
       this.#filmPresenter.set(film.id, filmPresenter);
@@ -154,7 +156,7 @@ export default class MovieListPresenter {
     render(this.#topRateComponent, this.#filmsListContainerTopComponent, RenderPosition.BEFOREEND);
     render(this.#filmsContentComponent, this.#topRateComponent, RenderPosition.BEFOREEND);
 
-    let filmsOfHigherRating = this.#films.sort(sortFilmRating);
+    let filmsOfHigherRating = this.#films.slice().sort(sortFilmRating);
 
     if (filmsOfHigherRating.length && filmsOfHigherRating.length > 2) {
       let mark = 0;
@@ -173,14 +175,14 @@ export default class MovieListPresenter {
 
     filmsOfHigherRating
       .slice(from, to)
-      .forEach((film) => this.#renderFilm(this.#filmsListContainerTopComponent, film, 'top'));
+      .forEach((film) => this.#renderFilm(this.#filmsListContainerTopComponent, film, blockType.TOP));
   }
 
   #renderFilmsMostCommented = (from, to) => {
     render(this.#mostCommentedComponent, this.#filmsListContainerMostComponent, RenderPosition.BEFOREEND);
     render(this.#filmsContentComponent, this.#mostCommentedComponent, RenderPosition.BEFOREEND);
 
-    let filmsOfMostCommented = this.#films.sort(sortFilmMostCommented);
+    let filmsOfMostCommented = this.#films.slice().sort(sortFilmMostCommented);
 
     if (filmsOfMostCommented.length && filmsOfMostCommented.length > 2) {
       let mark = 0;
@@ -199,7 +201,7 @@ export default class MovieListPresenter {
 
     filmsOfMostCommented
       .slice(from, to)
-      .forEach((film) => this.#renderFilm(this.#filmsListContainerMostComponent, film, 'commented'));
+      .forEach((film) => this.#renderFilm(this.#filmsListContainerMostComponent, film, blockType.COMMENTED));
   }
 
   #renderNoFilms = () => {
