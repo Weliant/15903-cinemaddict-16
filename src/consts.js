@@ -15,3 +15,8 @@ export const SortType = {
   DATE: 'date',
   RATING: 'rating',
 };
+
+export const blockType = {
+  TOP: 'top',
+  COMMENTED: 'commented',
+};

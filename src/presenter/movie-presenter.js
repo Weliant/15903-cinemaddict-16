@@ -1,6 +1,6 @@
 import {render, RenderPosition, remove, replace} from '../utils/render.js';
 import FilmCardView from '../view/film-card-view.js';
-import {isEscPressed} from '../utils/common.js';
+import {isEscPressed, isEnterMessagePressed} from '../utils/common.js';
 import FilmDetailsPopupView from '../view/film-details-popup-view.js';
 import CloseButtonView from '../view/close-button-view.js';
 import FilmDetailsPosterView from '../view/film-details-poster-view.js';
@@ -18,6 +18,7 @@ export default class MoviePresenter {
   #filmDetailsPopupContainerComponent = null;
   #filmDetailsPopupComponent = null;
   #closeButtonComponent = null;
+  #commentsComponent = null;
 
   constructor(filmListContainer, changeData) {
     this.#filmListContainer = filmListContainer;
@@ -73,11 +74,14 @@ export default class MoviePresenter {
     }
   };
 
-  #onEscKeyDown = (evt) => {
+  #onKeyDown = (evt) => {
     if (isEscPressed(evt)) {
       evt.preventDefault();
       this.#removePopup();
-      document.removeEventListener('keydown', this.#onEscKeyDown);
+      document.removeEventListener('keydown', this.#onKeyDown);
+    }
+    else if (isEnterMessagePressed(evt)) {
+      // отправить комментарий
     }
   };
 
@@ -99,6 +103,7 @@ export default class MoviePresenter {
     this.#filmDetailsPopupComponent = new FilmDetailsPopupView(this.#film);
     this.#closeButtonComponent = new CloseButtonView();
     this.#filmDetailsPopupContainerComponent.appendChild(this.#filmDetailsPopupComponent.element);
+    this.#commentsComponent = new FilmDetailsCommentView(this.#film.comments);
 
     const siteFilmDetailsElement = this.#filmDetailsPopupComponent.element.querySelector('.film-details__info-wrap');
     const siteFilmDetailsCommentsWrapElement = this.#filmDetailsPopupComponent.element.querySelector('.film-details__comments-wrap');
@@ -106,7 +111,7 @@ export default class MoviePresenter {
 
     siteFilmDetailsElement.appendChild(new FilmDetailsPosterView(this.#film).element);
     siteFilmDetailsElement.appendChild(new FilmDetailsInfoView(this.#film).element);
-    siteFilmDetailsCommentsWrapElement.appendChild(new FilmDetailsCommentView(this.#film.comments).element);
+    siteFilmDetailsCommentsWrapElement.appendChild(this.#commentsComponent.element);
     siteFilmDetailsCommentsWrapElement.appendChild(new FilmDetailsCommentNewView().element);
     buttonCloseElement.appendChild(this.#closeButtonComponent.element);
 
@@ -118,11 +123,15 @@ export default class MoviePresenter {
     this.#filmDetailsPopupComponent.setWatchedClickHandler(this.#warchedClickHandler);
     this.#filmDetailsPopupComponent.setFavoiteClickHandler(this.#favoriteClickHandler);
 
-    document.addEventListener('keydown', this.#onEscKeyDown);
+    document.addEventListener('keydown', this.#onKeyDown);
 
     this.#closeButtonComponent.setCloseClickHandler(() => {
-      document.removeEventListener('keydown', this.#onEscKeyDown);
+      document.removeEventListener('keydown', this.#onKeyDown);
       this.#removePopup();
+    });
+
+    this.#commentsComponent.setDeleteClickHandler(() => {
+      // вызвать запрос удаления комментария
     });
   }
 

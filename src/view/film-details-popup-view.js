@@ -1,7 +1,7 @@
-import AbstractView from './abstract-view.js';
+import SmartView from './smart-view.js';
 
 const createFilmDetailsPopupTemplate = (film) => {
-  const {id, userDetails} = film;
+  const {id, userDetails, countComments} = film;
 
   const wacthListClassName = userDetails.watchlist
     ? 'film-details__control-button--active'
@@ -30,7 +30,7 @@ const createFilmDetailsPopupTemplate = (film) => {
 
               <div class="film-details__bottom-container">
                 <section class="film-details__comments-wrap">
-                  <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${film.comments.length}</span></h3>
+                  <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${countComments}</span></h3>
                   <div class="film-details__new-comment">
                   </div>
                 </section>
@@ -40,17 +40,19 @@ const createFilmDetailsPopupTemplate = (film) => {
 };
 
 
-export default class FilmDetailsPopupView extends AbstractView {
-  #film = null;
-
+export default class FilmDetailsPopupView extends SmartView {
   constructor(film){
     super();
-    this.#film = film;
+    this._data = FilmDetailsPopupView.parseTaskToData(film);
   }
 
   get template() {
-    return createFilmDetailsPopupTemplate(this.#film);
+    return createFilmDetailsPopupTemplate(this._data);
   }
+
+  static parseTaskToData = (film) => ({...film,
+    countComments: film.comments.length
+  });
 
   setWatchListClickHandler = (callback) => {
     this._callback.watchListClick = callback;

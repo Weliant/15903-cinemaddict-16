@@ -1,3 +1,4 @@
+import {nanoid} from 'nanoid';
 import {generateData, getFullDate} from './../utils/film.js';
 
 const messages = ['Interesting setting and a good cast', 'Booooooooooring', 'Very very old. Meh', 'Almost two hours? Seriously?'];
@@ -6,6 +7,7 @@ const authors = ['Tim Macoveev', 'John Doe', 'John Black', 'Monika Moor'];
 const date = new Date();
 
 export const generateComment = () => ({
+  id: nanoid(),
   author: generateData(authors),
   comment: generateData(messages),
   date: getFullDate(date),

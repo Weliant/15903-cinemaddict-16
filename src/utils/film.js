@@ -23,6 +23,8 @@ export const generateDataArray = (indx, array, max = 0) => {
   return uniqArray;
 };
 
+export const getReleaseDate = (date) => dayjs(date).format('D MMMM YYYY');
+
 export const getFullDate = (date) => dayjs(date).format('YYYY/MM/DD HH:mm');
 
 export const getHours = (minutes) => Math.floor(minutes/60);
