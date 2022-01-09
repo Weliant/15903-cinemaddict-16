@@ -11,7 +11,7 @@ const createFilmDetailsCommentNewTemplate = (data) => {
   const {emotion} = data;
 
   return   `<div class="film-details__new-comment">
-        <div class="film-details__add-emoji-label ${emotion}">
+        <div class="film-details__add-emoji-label" data-emotion="${emotion}">
           ${emotionItem(emotion)}
         </div>
 
@@ -49,6 +49,10 @@ export default class FilmDetailsCommentNewView extends SmartView {
   constructor(comment = COMMENT_BLANK) {
     super();
     this._data = FilmDetailsCommentNewView.parseTaskToData(comment);
+
+    if (this._data.comment) {
+      this.element.querySelector('.film-details__comment-input').value = this._data.comment;
+    }
 
     this.#setInnerHandlers();
   }

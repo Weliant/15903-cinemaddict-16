@@ -16,7 +16,7 @@ export const SortType = {
   RATING: 'rating',
 };
 
-export const blockType = {
+export const BlockType = {
   TOP: 'top',
   COMMENTED: 'commented',
 };

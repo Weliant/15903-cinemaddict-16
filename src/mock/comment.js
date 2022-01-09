@@ -1,5 +1,5 @@
 import {nanoid} from 'nanoid';
-import {generateData, getFullDate} from './../utils/film.js';
+import {generateData, getFullDateHumanize} from './../utils/film.js';
 
 const messages = ['Interesting setting and a good cast', 'Booooooooooring', 'Very very old. Meh', 'Almost two hours? Seriously?'];
 const emotions = ['smile', 'sleeping', 'puke', 'angry'];
@@ -10,6 +10,6 @@ export const generateComment = () => ({
   id: nanoid(),
   author: generateData(authors),
   comment: generateData(messages),
-  date: getFullDate(date),
+  date: getFullDateHumanize(date),
   emotion: generateData(emotions)
 });
