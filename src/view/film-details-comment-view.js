@@ -1,3 +1,4 @@
+import he from 'he';
 import SmartView from './smart-view.js';
 
 const createFilmDetailsCommentItemTemplate = (data) => {
@@ -9,7 +10,7 @@ const createFilmDetailsCommentItemTemplate = (data) => {
               <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-smile">
             </span>
             <div>
-              <p class="film-details__comment-text">${comment}</p>
+              <p class="film-details__comment-text">${he.encode(comment)}</p>
               <p class="film-details__comment-info">
                 <span class="film-details__comment-author">${author}</span>
                 <span class="film-details__comment-day">${date}</span>
@@ -49,6 +50,7 @@ export default class FilmDetailsCommentView extends SmartView {
 
   #buttonDeleteClickHandler = (evt) => {
     evt.preventDefault();
+
     if (evt.target.classList.contains('film-details__comment-delete')){
       this._callback.deleteClick(evt.target.dataset.id);
     }

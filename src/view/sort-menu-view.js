@@ -23,15 +23,15 @@ const createSortMenuTemplate = (type) => {
 };
 
 export default class SortMenuView extends AbstractView {
-  #type = SortType.DEFAULT;
+  #currentSortType = null;
 
-  constructor(type){
+  constructor(type = SortType.DEFAULT){
     super();
-    this.#type = type;
+    this.#currentSortType = type;
   }
 
   get template() {
-    return createSortMenuTemplate(this.#type);
+    return createSortMenuTemplate(this.#currentSortType);
   }
 
   setSortTypeChangeHandler = (callback) => {

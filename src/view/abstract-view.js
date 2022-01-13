@@ -24,5 +24,9 @@ export default class AbstractView {
 
   removeElement() {
     this.#element = null;
+
+    this.removeHandlers();
   }
+
+  removeHandlers = () => {}
 }
