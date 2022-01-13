@@ -168,7 +168,7 @@ export default class MoviePresenter {
     }
   }
 
-  #handleCommentModelEvent = (updateType, data) => {
+  #handleCommentModelEvent = (updateType) => {
     switch (updateType) {
       case UpdateType.MINOR:
         this.#newCommentData = {};
