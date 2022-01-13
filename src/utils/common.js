@@ -19,19 +19,3 @@ export const getRandomPositiveFloat = (a, b, digits = 1) => {
 export const isEscPressed = (evt) => evt.key === 'Escape' || evt.key === 'Esc';
 
 export const isEnterMessagePressed = (evt) => evt.key === 'Enter' && evt.ctrlKey;
-
-export const updateItem = (items, update) => {
-  const index = items.findIndex((item) => item.id === update.id);
-
-  if (index === -1) {
-    return items;
-  }
-
-  const data = [
-    ...items.slice(0, index),
-    update,
-    ...items.slice(index + 1),
-  ];
-
-  return data;
-};

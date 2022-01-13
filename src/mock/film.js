@@ -1,6 +1,6 @@
 import {getRandomInteger, getRandomPositiveFloat} from './../utils/common.js';
 import {generateData, generateDataArray} from './../utils/film';
-import {generateComment} from './comment.js';
+import {generateIdComment} from './comment.js';
 import {GENRES} from '../consts.js';
 import {nanoid} from 'nanoid';
 
@@ -43,7 +43,7 @@ const descriptions = text.split('.').map((item) => item.trim()).filter((item) =>
 
 const generateComments = () => {
   const randomValue = getRandomInteger(0, MAX_COUNT);
-  return Array.from({length: randomValue}, generateComment);
+  return Array.from({length: randomValue}, generateIdComment);
 };
 
 export const generateFilm = () => {

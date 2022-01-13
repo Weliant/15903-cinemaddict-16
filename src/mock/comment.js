@@ -7,9 +7,10 @@ const authors = ['Tim Macoveev', 'John Doe', 'John Black', 'Monika Moor'];
 const date = new Date();
 
 export const generateComment = () => ({
-  id: nanoid(),
   author: generateData(authors),
   comment: generateData(messages),
   date: getFullDateHumanize(date),
   emotion: generateData(emotions)
 });
+
+export const generateIdComment = () => nanoid();

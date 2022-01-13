@@ -1,7 +1,7 @@
 import SmartView from './smart-view.js';
 
 const createFilmDetailsPopupTemplate = (film) => {
-  const {id, userDetails, countComments} = film;
+  const {id, userDetails} = film;
 
   const wacthListClassName = userDetails.watchlist
     ? 'film-details__control-button--active'
@@ -30,9 +30,6 @@ const createFilmDetailsPopupTemplate = (film) => {
 
               <div class="film-details__bottom-container">
                 <section class="film-details__comments-wrap">
-                  <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${countComments}</span></h3>
-                  <div class="film-details__new-comment">
-                  </div>
                 </section>
               </div>
             </form>

@@ -11,14 +11,12 @@ const createUserMenuTemplate = (user) => {
 };
 
 export default class UserMenuView extends AbstractView {
-  #user = null;
-
   constructor(user){
     super();
-    this.#user = user;
+    this._data = user;
   }
 
   get template() {
-    return createUserMenuTemplate(this.#user);
+    return createUserMenuTemplate(this._data);
   }
 }

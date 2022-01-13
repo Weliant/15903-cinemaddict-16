@@ -3,18 +3,18 @@ import AbstractView from './abstract-view.js';
 
 const getCountItemTemplate = (count) => `<span class="main-navigation__item-count">${count}</span>`;
 
-const createFilterItemTemplate = (filter, isFirst) => {
-  const {name, count} = filter;
+const createFilterItemTemplate = (filter, currentFilterType) => {
+  const {type, name, count} = filter;
 
-  return  `<a href="#${name}" class="main-navigation__item ${isFirst ? 'main-navigation__item--active' : ''}">
-            ${toCapitalizeLetter(name)} ${isFirst ? 'movies' : ''} ${!isFirst ? getCountItemTemplate(count) : ''}
+  return  `<a href="#${name}" class="main-navigation__item ${type === currentFilterType ? 'main-navigation__item--active' : ''}" data-filter="${type}">
+            ${toCapitalizeLetter(name)} ${type === 'all' ? 'movies' : ''} ${type !== 'all' ? getCountItemTemplate(count) : ''}
           </a>
           `;
 };
 
-const createFilterTemplate = (filterItems) => {
+const createFilterTemplate = (filterItems, currentFilterType) => {
   const filterItemsTemplate = filterItems
-    .map((filter, index) => createFilterItemTemplate(filter, index === 0))
+    .map((filter) => createFilterItemTemplate(filter, currentFilterType))
     .join('');
 
   return `<nav class="main-navigation">
@@ -26,14 +26,29 @@ const createFilterTemplate = (filterItems) => {
 };
 
 export default class FilterView extends AbstractView {
-  #filter = null;
+  #filters = null;
+  #currentFilter = null;
 
-  constructor(filter){
+  constructor(filters, currentFilterType) {
     super();
-    this.#filter = filter;
+    this.#filters = filters;
+    this.#currentFilter = currentFilterType;
   }
 
   get template() {
-    return createFilterTemplate(this.#filter);
+    return createFilterTemplate(this.#filters, this.#currentFilter);
+  }
+
+  setFilterTypeChangeHandler = (callback) => {
+    this._callback.filterTypeChange = callback;
+    this.element.addEventListener('click', this.#filterTypeChangeHandler);
+  }
+
+  #filterTypeChangeHandler = (evt) => {
+    evt.preventDefault();
+
+    if (evt.target.classList.contains('main-navigation__item')) {
+      this._callback.filterTypeChange(evt.target.dataset.filter);
+    }
   }
 }
