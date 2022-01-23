@@ -1,6 +1,9 @@
 import dayjs from 'dayjs';
 import {GENRES} from '../consts.js';
 import {getRandomInteger} from './common.js';
+import relativeTime from'dayjs/plugin/relativeTime';
+
+dayjs.extend(relativeTime);
 
 export const generateData = (array) => {
   const randomIndex = getRandomInteger(0, array.length - 1);
@@ -25,52 +28,7 @@ export const generateDataArray = (indx, array, max = 0) => {
 
 export const getReleaseDate = (date) => dayjs(date).format('D MMMM YYYY');
 
-export const getFullDateHumanize = (date) => {
-  const dateNew = date.setDate(date.getDate() - 5); // заглушка на данный момент для генерации разных дат
-  let dateComment = dayjs(dateNew).unix();
-  let dateNow = dayjs().unix();
-  const diff = dateNow - dateComment;
-  let text = '';
-
-  // 60 секунд для определения минут
-  // 3600 секунд для определения часа
-  // 86400 секунд для определения первых суток
-
-  if (diff <= 60) {
-    text = 'now';
-  } else if (diff <= 3600){
-    text = 'a few minutes ago';
-  } else if (diff <= 86400){
-    text = 'today';
-  } else {
-    dateComment = dateNew;
-    dateNow = dayjs();
-    let dDiff = dateNow.diff(dateComment, 'day');
-    if (dDiff <= 7) {
-      text = `${dDiff} days ago`;
-    } else {
-      //проверка на месяц
-      dDiff = dateNow.diff(dateComment, 'month');
-
-      if (dDiff === 0) {
-        text = 'a few days ago';
-      } else if (dDiff < 11){
-        text = `${dDiff + 1} months ago`;
-      } else {
-        //проверка на год
-        dDiff = dateNow.diff(dateComment, 'year');
-
-        if (dDiff === 0) {
-          text = 'a year ago';
-        } else {
-          text = `${dDiff + 1} years ago`;
-        }
-      }
-    }
-  }
-
-  return text;
-};
+export const getFullDateHumanize = (date) => dayjs(date).fromNow();
 
 export const getHours = (minutes) => Math.floor(minutes/60);
 
@@ -110,3 +68,69 @@ export const sortFilmDate = (filmA, filmB) => {
 export const sortFilmRating = (filmA, filmB) => +filmB.filmInfo.totalRating - +filmA.filmInfo.totalRating;
 
 export const sortFilmMostCommented = (filmA, filmB) => filmB.comments.length - filmA.comments.length;
+
+export const adaptToClient = (film) => {
+  const adaptedFilm = {...film,
+    filmInfo: {
+      title: film.film_info.title,
+      alternativeTitle: film.film_info.alternative_title,
+      totalRating: film.film_info.total_rating,
+      poster: film.film_info.poster,
+      ageRating: film.film_info.age_rating,
+      director: film.film_info.director,
+      writers: film.film_info.writers,
+      actors: film.film_info.actors,
+      release: {
+        date: film.film_info.release.date !== null ? new Date(film.film_info.release.date) : film.film_info.release.date,
+        releaseCountry: film.film_info.release.release_country
+      },
+      runtime: film.film_info.runtime,
+      genre: film.film_info.genre,
+      description: film.film_info.description
+    },
+    userDetails: {
+      watchlist: film.user_details.watchlist,
+      alreadyWatched: film.user_details.already_watched,
+      favorite: film.user_details.favorite,
+      watchingDate: film.user_details['watching_date'] !== null ? new Date(film.user_details['watching_date']) : film.user_details['watching_date']
+    }
+  };
+
+  delete adaptedFilm['film_info'];
+  delete adaptedFilm['user_details'];
+
+  return adaptedFilm;
+};
+
+export const adaptToServer = (film) => {
+  const adaptedFilm = {...film,
+    'film_info': {
+      title: film.filmInfo.title,
+      'alternative_title': film.filmInfo.alternativeTitle,
+      'total_rating': film.filmInfo.totalRating,
+      poster: film.filmInfo.poster,
+      'age_rating': film.filmInfo.ageRating,
+      director: film.filmInfo.director,
+      writers: film.filmInfo.writers,
+      actors: film.filmInfo.actors,
+      release: {
+        date: film.filmInfo.release.date instanceof Date ?film.filmInfo.release.date.toISOString() : null,
+        'release_country': film.filmInfo.release.releaseCountry
+      },
+      runtime: film.filmInfo.runtime,
+      genre: film.filmInfo.genre,
+      description: film.filmInfo.description
+    },
+    'user_details': {
+      watchlist: film.userDetails.watchlist,
+      'already_watched': film.userDetails.alreadyWatched,
+      favorite: film.userDetails.favorite,
+      'watching_date': film.userDetails.watchingDate instanceof Date ? film.userDetails.watchingDate.toISOString() : null
+    }
+  };
+
+  delete adaptedFilm['filmInfo'];
+  delete adaptedFilm['userDetails'];
+
+  return adaptedFilm;
+};

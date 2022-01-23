@@ -3,10 +3,11 @@ import {Rank, URL_AVATAR} from '../consts.js';
 const userRank = new Map();
 const fromValue = 1;
 
-for (let i = 0; i < Rank.STATUS.length; i++) {
+Rank.STATUS.forEach((film, i) => {
   const countFilms = fromValue + Rank.RANGE*i;
   userRank.set(countFilms, Rank.STATUS[i]);
-}
+});
+
 const getRank = (films) => {
   const countWatchedFilms = films.filter((film) => film.userDetails.alreadyWatched).length;
   let rank = '';

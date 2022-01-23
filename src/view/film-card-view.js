@@ -83,7 +83,10 @@ export default class FilmCardView extends AbstractView {
 
   #openClickHandler = (evt) => {
     evt.preventDefault();
-    this._callback.openClick();
+
+    if (!evt.target.closest('.film-card__controls')) {
+      this._callback.openClick();
+    }
   }
 
   #watchListClickHandler = (evt) => {
