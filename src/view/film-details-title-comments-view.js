@@ -17,6 +17,6 @@ export default class FilmDetailsTitleCommentsView extends SmartView {
   }
 
   static parseTaskToData = (comments) => ({
-    countComments: comments.length
+    countComments: comments?.length
   });
 }

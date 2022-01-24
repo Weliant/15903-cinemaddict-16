@@ -7,12 +7,15 @@ import TopRateView from '../view/top-rate-view.js';
 import MostCommentedView from '../view/most-commented-view.js';
 import ShowMoreButtonView from '../view/show-more-button-view.js';
 import FilmDetailsPopupContainerView from '../view/film-details-popup-container-view.js';
+import LoadingView from '../view/loading-view.js';
+import FooterStatisticView from '../view/footer-statistic-view.js';
 import {render, RenderPosition, remove, replace} from '../utils/render.js';
 import {isEscPressed} from '../utils/common.js';
 import {sortFilmDate, sortFilmRating, generateDataArray, sortFilmMostCommented} from '../utils/film.js';
 import {filter} from '../utils/filter.js';
 import {Films, SortType, BlockType, UpdateType, UserAction, FilterType} from '../consts.js';
 import MoviePresenter from './movie-presenter.js';
+import MoviePopupPresenter from './movie-popup-presenter.js';
 
 export default class MovieListPresenter {
   #filmsContainer = null;
@@ -25,6 +28,7 @@ export default class MovieListPresenter {
   #filmsListContainerTopComponent = new FilmsListContainerView();
   #filmsListContainerMostComponent = new FilmsListContainerView();
   #filmDetailsPopupContainerComponent = new FilmDetailsPopupContainerView();
+  #loadingComponent = new LoadingView();
   #showMoreButtonComponent = null;
   #filmsListComponent = null;
   #noFilmComponent = null;
@@ -40,11 +44,11 @@ export default class MovieListPresenter {
   #filmPresenter = new Map();
   #filmPresenterTop = new Map();
   #filmPresenterMostCommented = new Map();
+  #popupPresenter = null;
 
   #filmOpenId = null;
   #commentsStore = null;
-  #scrollPopup = 0;
-  #isInit = false;
+  #isLoading = true;
 
   constructor(filmsContainer, filmsModel, filterModel) {
     this.#filmsContainer = filmsContainer;
@@ -77,6 +81,9 @@ export default class MovieListPresenter {
   init = () => {
     this.#filmsListComponent = new FilmsListView();
 
+    render(this.#filmsContainer, this.#filmsContentComponent, RenderPosition.BEFOREEND);
+    render(this.#filmsContentComponent, this.#filmsListComponent, RenderPosition.AFTERBEGIN);
+
     this.#renderFilmsPage();
   }
 
@@ -90,27 +97,7 @@ export default class MovieListPresenter {
         this.#filmOpenId = update.id;
         break;
       case UserAction.ADD_WATCHLIST:
-        this.#commentsStore = {
-          comment: textComment,
-          emotion
-        };
-        if (actionType.slice(4).toLocaleLowerCase() === this.#filterType) {
-          this.#filmsModel.updateFilm('MAJOR', update);
-        } else {
-          this.#filmsModel.updateFilm(updateType, update);
-        }
-        break;
       case UserAction.ADD_HISTORY:
-        this.#commentsStore = {
-          comment: textComment,
-          emotion
-        };
-        if (actionType.slice(4).toLocaleLowerCase() === this.#filterType) {
-          this.#filmsModel.updateFilm('MAJOR', update);
-        } else {
-          this.#filmsModel.updateFilm(updateType, update);
-        }
-        break;
       case UserAction.ADD_FAVORITES:
         this.#commentsStore = {
           comment: textComment,
@@ -128,28 +115,29 @@ export default class MovieListPresenter {
 
   #handleModelEvent = (updateType, data) => {
     switch (updateType) {
-      case UpdateType.CLOSE:
-        this.#filmPresenter.get(data.id)?.clearPopup();
-        break;
-      case UpdateType.MICRO:
-        // - обновить часть фильма в карточке и блок "Most commented"
-        this.#filmPresenter.get(data.id)?.updateInfo(data, this.#filmsListComponent);
-        remove(this.#filmsListContainerMostComponent);
-        remove(this.#mostCommentedComponent);
-        this.#renderFilmsListMostCommented();
-        break;
       case UpdateType.PATCH:
         // - обновить часть фильма (например, когда поменялось описание)
-        this.#filmPresenter.get(data.id)?.init(data, true, this.#filmsListComponent, this.#commentsStore);
+        this.#filmPresenter.get(data.id)?.init(data, true, this.#filmsListComponent);
+        this.#filmPresenterTop.get(data.id)?.init(data, true, this.#topRateComponent);
+        this.#filmPresenterMostCommented.get(data.id)?.init(data, true, this.#mostCommentedComponent);
+        if (this.#filmOpenId) {
+          this.#popupPresenter.init(data, true, this.#commentsStore);
+        }
         break;
       case UpdateType.MINOR:
         // - обновить список (например, когда фильм ушел в любимые)
-        this.#clearFilmsPage({}, data.id);
+        this.#clearFilmsPage({});
         this.#renderFilmsPage();
         break;
       case UpdateType.MAJOR:
-        // - обновить всю доску (например, при переключении фильтра)
+        // - обновить всю страницу (например, при переключении фильтра)
         this.#clearFilmsPage({resetRenderedFilmCount: true, resetSortType: true});
+        this.#renderFilmsPage();
+        break;
+      case UpdateType.INIT:
+        // - обновить когда загрузился спискок фильмов
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
         this.#renderFilmsPage();
         break;
     }
@@ -179,6 +167,11 @@ export default class MovieListPresenter {
     render(this.#filmsContainer, this.#sortMenuComponent, RenderPosition.BEFOREEND);
   }
 
+  #renderFooter = () => {
+    const siteFooterStatisticElement = this.#bodyElement.querySelector('.footer .footer__statistics');
+    render(siteFooterStatisticElement, new FooterStatisticView(this.films.length), RenderPosition.BEFOREEND);
+  }
+
   #addEventDocument = () => {
     document.addEventListener('keydown', this.#onKeyDown);
   }
@@ -190,18 +183,13 @@ export default class MovieListPresenter {
       filmDetailsPopupContainerComponent.removeChild(popupComponent);
     }
 
-    if (this.#bodyElement.classList.contains('hide-overflow')) {
-      this.#bodyElement.classList.remove('hide-overflow');
+    if (this.#filmOpenId) {
+      this.#filmOpenId = null;
+      this.#popupPresenter.destroy();
     }
 
-    if (this.#filmOpenId) {
-      const film = this.films.filter((item) => item.id === this.#filmOpenId);
-
-      this.#handleViewAction(
-        UserAction.UPDATE_FILM,
-        UpdateType.CLOSE,
-        {...film[0]},
-      );
+    if (this.#bodyElement.classList.contains('hide-overflow')) {
+      this.#bodyElement.classList.remove('hide-overflow');
     }
 
     document.removeEventListener('keydown', this.#onKeyDown);
@@ -214,8 +202,14 @@ export default class MovieListPresenter {
     }
   };
 
+  #openPopup = (film) => {
+    this.#removePopup();
+    this.#popupPresenter = new MoviePopupPresenter(this.#handleViewAction, this.#addEventDocument, this.#removePopup);
+    this.#popupPresenter.init(film);
+  }
+
   #renderFilm = (container, film, type = '') => {
-    const filmPresenter = new MoviePresenter(container, this.#handleViewAction, this.#addEventDocument,this.#removePopup);
+    const filmPresenter = new MoviePresenter(container, this.#handleViewAction, this.#openPopup);
     filmPresenter.init(film);
 
     if (type === BlockType.TOP) {
@@ -289,6 +283,10 @@ export default class MovieListPresenter {
       .forEach((film) => this.#renderFilm(this.#filmsListContainerMostComponent, film, BlockType.COMMENTED));
   }
 
+  #renderLoading = () => {
+    render(this.#filmsListComponent, this.#loadingComponent, RenderPosition.AFTERBEGIN);
+  }
+
   #renderNoFilms = () => {
     this.#noFilmComponent = new NoFilmView(this.#filterType);
 
@@ -320,8 +318,6 @@ export default class MovieListPresenter {
   }
 
   #renderFilmsList = () => {
-    render(this.#filmsContentComponent, this.#filmsListComponent, RenderPosition.AFTERBEGIN);
-
     if (!this.films.length) {
       return false;
     }
@@ -356,18 +352,18 @@ export default class MovieListPresenter {
     this.#bodyElement.appendChild(this.#filmDetailsPopupContainerComponent.element);
   }
 
-  #clearFilmsPage = ({resetRenderedFilmCount = false, resetSortType = false} = {}, idFilm = null) => {
+  #clearFilmsPage = ({resetRenderedFilmCount = false, resetSortType = false} = {}) => {
     const filmCount = this.films.length;
 
-    this.#scrollPopup = document.querySelector('.film-details').scrollTop;
-    if (this.#bodyElement.classList.contains('hide-overflow')) {
-      this.#filmOpenId = idFilm;
-    } else {
-      this.#filmOpenId = null;
-    }
 
     this.#filmPresenter.forEach((presenter) => presenter.destroy());
     this.#filmPresenter.clear();
+
+    this.#filmPresenterTop.forEach((presenter) => presenter.destroy());
+    this.#filmPresenterTop.clear();
+
+    this.#filmPresenterMostCommented.forEach((presenter) => presenter.destroy());
+    this.#filmPresenterMostCommented.clear();
 
     remove(this.#sortMenuComponent);
     remove(this.#showMoreButtonComponent);
@@ -389,13 +385,22 @@ export default class MovieListPresenter {
       this.#currentSortType = SortType.DEFAULT;
     }
 
-    this.#removePopup();
+    if (this.#filmOpenId) {
+      const film = this.films.filter((item) => item.id === this.#filmOpenId);
+
+      if (!film.length) {
+        this.#removePopup();
+      }
+    }
   }
 
   #renderFilmsPage = () => {
-    if (!this.films.length) {
-      render(this.#filmsContainer, this.#filmsContentComponent, RenderPosition.BEFOREEND);
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
 
+    if (!this.films.length) {
       this.#renderFilmsList();
       this.#renderNoFilms();
       return false;
@@ -408,17 +413,8 @@ export default class MovieListPresenter {
 
     this.#renderFilmsList();
 
-    if (!this.#isInit) {
-      this.#renderFilmsListTop();
-      this.#renderFilmsListMostCommented();
-
-      this.#isInit = true;
-    }
-
-    if (this.#filmOpenId) {
-      const filmCardElement = this.#bodyElement.querySelector(`.film-card[data-id="${this.#filmOpenId}"]`);
-      filmCardElement.querySelector('.film-card__link').click();
-      document.querySelector('.film-details').scrollTop = this.#scrollPopup;
-    }
+    this.#renderFilmsListTop();
+    this.#renderFilmsListMostCommented();
+    this.#renderFooter();
   }
 }

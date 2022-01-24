@@ -1,5 +1,6 @@
 import he from 'he';
-import SmartView from './smart-view.js';
+import SmartView from './smart-view';
+import {getFullDateHumanize} from '../utils/film';
 
 const createFilmDetailsCommentItemTemplate = (data) => {
   const {id, comment, emotion, author, date} = data;
@@ -13,7 +14,7 @@ const createFilmDetailsCommentItemTemplate = (data) => {
               <p class="film-details__comment-text">${he.encode(comment)}</p>
               <p class="film-details__comment-info">
                 <span class="film-details__comment-author">${author}</span>
-                <span class="film-details__comment-day">${date}</span>
+                <span class="film-details__comment-day">${getFullDateHumanize(date)}</span>
                 <button class="film-details__comment-delete" data-id="${id}">Delete</button>
               </p>
             </div>

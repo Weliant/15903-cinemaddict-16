@@ -32,11 +32,11 @@ export const UserAction = {
 };
 
 export const UpdateType = {
-  CLOSE: 'CLOSE',
-  MICRO: 'MICRO',
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+  INIT: 'INIT',
+  ERROR: 'ERROR',
 };
 
 export const FilterType = {
@@ -45,3 +45,6 @@ export const FilterType = {
   HISTORY: 'history',
   FAVORITES: 'favorites',
 };
+
+export const AUTHORIZATION = 'Basic hdjkfhsdjf87879t';
+export const END_POINT = 'https://16.ecmascript.pages.academy/cinemaddict';

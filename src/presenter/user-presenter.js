@@ -17,10 +17,10 @@ export default class UserPresenter {
 
     this.#filmsModel.addObserver(this.#handleModelEvent);
 
-    for (let i = 0; i < Rank.STATUS.length; i++) {
+    Rank.STATUS.forEach((_film, i) => {
       const countFilms = this.#fromValue + Rank.RANGE*i;
       this.#userRank.set(countFilms, Rank.STATUS[i]);
-    }
+    });
 
     this.init();
   }
