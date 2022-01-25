@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
-import AbstractView from './abstract-view.js';
-import {getTimesFormatted} from '../utils/film.js';
-import {MAX_LENGTH} from '../consts.js';
+import AbstractView from './abstract-view';
+import {getTimesFormatted} from '../utils/film';
+import {MAX_LENGTH} from '../consts';
 
 const createFilmCardTemplate = (film) => {
   const {id, filmInfo, comments, userDetails} = film;
@@ -50,15 +50,13 @@ const createFilmCardTemplate = (film) => {
 };
 
 export default class FilmCardView extends AbstractView {
-  #film = null;
-
   constructor(film){
     super();
-    this.#film = film;
+    this._data = film;
   }
 
   get template() {
-    return createFilmCardTemplate(this.#film);
+    return createFilmCardTemplate(this._data);
   }
 
   setOpenClickHandler = (callback) => {

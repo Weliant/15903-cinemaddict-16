@@ -1,21 +1,21 @@
-import SortMenuView from '../view/sort-menu-view.js';
-import FilmsContentView from '../view/films-content-view.js';
-import FilmsListView from '../view/films-list-view.js';
-import NoFilmView from '../view/no-film-view.js';
-import FilmsListContainerView from '../view/films-container-view.js';
-import TopRateView from '../view/top-rate-view.js';
-import MostCommentedView from '../view/most-commented-view.js';
-import ShowMoreButtonView from '../view/show-more-button-view.js';
-import FilmDetailsPopupContainerView from '../view/film-details-popup-container-view.js';
-import LoadingView from '../view/loading-view.js';
-import FooterStatisticView from '../view/footer-statistic-view.js';
-import {render, RenderPosition, remove, replace} from '../utils/render.js';
-import {isEscPressed} from '../utils/common.js';
-import {sortFilmDate, sortFilmRating, generateDataArray, sortFilmMostCommented} from '../utils/film.js';
-import {filter} from '../utils/filter.js';
-import {Films, SortType, BlockType, UpdateType, UserAction, FilterType} from '../consts.js';
-import MoviePresenter from './movie-presenter.js';
-import MoviePopupPresenter from './movie-popup-presenter.js';
+import SortMenuView from '../view/sort-menu-view';
+import FilmsContentView from '../view/films-content-view';
+import FilmsListView from '../view/films-list-view';
+import NoFilmView from '../view/no-film-view';
+import FilmsListContainerView from '../view/films-container-view';
+import TopRateView from '../view/top-rate-view';
+import MostCommentedView from '../view/most-commented-view';
+import ShowMoreButtonView from '../view/show-more-button-view';
+import FilmDetailsPopupContainerView from '../view/film-details-popup-container-view';
+import LoadingView from '../view/loading-view';
+import FooterStatisticView from '../view/footer-statistic-view';
+import {render, RenderPosition, remove, replace} from '../utils/render';
+import {isEscPressed} from '../utils/common';
+import {sortFilmDate, sortFilmRating, generateDataArray, sortFilmMostCommented} from '../utils/film';
+import {filter} from '../utils/filter';
+import {Films, SortType, BlockType, UpdateType, UserAction, FilterType} from '../consts';
+import MoviePresenter from './movie-presenter';
+import MoviePopupPresenter from './movie-popup-presenter';
 
 export default class MovieListPresenter {
   #filmsContainer = null;
@@ -49,6 +49,7 @@ export default class MovieListPresenter {
   #filmOpenId = null;
   #commentsStore = null;
   #isLoading = true;
+  #scrollPopup = 0;
 
   constructor(filmsContainer, filmsModel, filterModel) {
     this.#filmsContainer = filmsContainer;
@@ -355,6 +356,7 @@ export default class MovieListPresenter {
   #clearFilmsPage = ({resetRenderedFilmCount = false, resetSortType = false} = {}) => {
     const filmCount = this.films.length;
 
+    this.#scrollPopup = document.querySelector('.film-details').scrollTop;
 
     this.#filmPresenter.forEach((presenter) => presenter.destroy());
     this.#filmPresenter.clear();
@@ -416,5 +418,9 @@ export default class MovieListPresenter {
     this.#renderFilmsListTop();
     this.#renderFilmsListMostCommented();
     this.#renderFooter();
+
+    if (this.#filmOpenId) {
+      document.querySelector('.film-details').scrollTop = this.#scrollPopup;
+    }
   }
 }

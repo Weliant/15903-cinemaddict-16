@@ -1,6 +1,6 @@
 import he from 'he';
-import SmartView from './smart-view.js';
-import {isEnterMessagePressed} from '../utils/common.js';
+import SmartView from './smart-view';
+import {isEnterMessagePressed} from '../utils/common';
 
 const COMMENT_BLANK = {
   comment: '',
@@ -10,7 +10,7 @@ const COMMENT_BLANK = {
 const emotionItem = (emotion) => emotion && emotion !== 'undefined' ? `<img src="images/emoji/${emotion}.png" width="55" height="55" alt="emoji-${emotion}">` : '';
 
 const createFilmDetailsCommentNewTemplate = (data) => {
-  const {comment, emotion} = data;
+  const {comment, emotion, isDisabled} = data;
   const text = !comment || comment === undefined ? ''  : comment.trim();
 
   return   `<div class="film-details__new-comment">
@@ -19,26 +19,30 @@ const createFilmDetailsCommentNewTemplate = (data) => {
         </div>
 
         <label class="film-details__comment-label">
-          <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${he.encode(text)}</textarea>
+          <textarea
+            class="film-details__comment-input"
+            placeholder="Select reaction below and write comment here"
+            name="comment" ${isDisabled ? 'disabled' : ''}
+          >${he.encode(text)}</textarea>
         </label>
 
         <div class="film-details__emoji-list">
-          <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile">
+          <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile" ${isDisabled ? 'disabled' : ''}>
           <label class="film-details__emoji-label" for="emoji-smile">
             <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">
           </label>
 
-          <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping">
+          <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping" ${isDisabled ? 'disabled' : ''}>
           <label class="film-details__emoji-label" for="emoji-sleeping">
             <img src="./images/emoji/sleeping.png" width="30" height="30" alt="emoji">
           </label>
 
-          <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke">
+          <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke" ${isDisabled ? 'disabled' : ''}>
           <label class="film-details__emoji-label" for="emoji-puke">
             <img src="./images/emoji/puke.png" width="30" height="30" alt="emoji">
           </label>
 
-          <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry">
+          <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry" ${isDisabled ? 'disabled' : ''}>
           <label class="film-details__emoji-label" for="emoji-angry">
             <img src="./images/emoji/angry.png" width="30" height="30" alt="emoji">
           </label>
@@ -51,7 +55,7 @@ const createFilmDetailsCommentNewTemplate = (data) => {
 export default class FilmDetailsCommentsNewView extends SmartView {
   constructor(comment = COMMENT_BLANK) {
     super();
-    this._data = FilmDetailsCommentsNewView.parseTaskToData(comment);
+    this._data = FilmDetailsCommentsNewView.parseCommentToData(comment);
 
     if (this._data.comment) {
       this.element.querySelector('.film-details__comment-input').value = this._data.comment.trim();
@@ -66,12 +70,16 @@ export default class FilmDetailsCommentsNewView extends SmartView {
     return createFilmDetailsCommentNewTemplate(this._data);
   }
 
-  static parseTaskToData = (task) => ({...task });
+  static parseCommentToData = (comment) => ({...comment,
+    isDisabled: false,
+  });
 
   static parseDataToTask = (data) => {
-    const film = {...data};
+    const comment = {...data};
 
-    return film;
+    delete comment.isDisabled;
+
+    return comment;
   }
 
   restoreHandlers = () => {
@@ -112,7 +120,7 @@ export default class FilmDetailsCommentsNewView extends SmartView {
       evt.preventDefault();
       const data = {...this._data};
       if (data.emotion && data.comment) {
-        this._callback.sendKeydown(data);
+        this._callback.sendKeydown(FilmDetailsCommentsNewView.parseDataToTask(data));
         document.removeEventListener('keydown', this.#buttonSendKeydownHandler);
       }
     }
