@@ -45,6 +45,3 @@ export const FilterType = {
   HISTORY: 'history',
   FAVORITES: 'favorites',
 };
-
-export const AUTHORIZATION = 'Basic hdjkfhsdjf87879t';
-export const END_POINT = 'https://16.ecmascript.pages.academy/cinemaddict';

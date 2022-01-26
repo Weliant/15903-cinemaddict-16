@@ -1,5 +1,6 @@
-import AbstractObservable from '../utils/abstract-observable.js';
-import {UpdateType} from '../consts.js';
+import AbstractObservable from '../services/abstract-observable';
+import {UpdateType} from '../consts';
+import {adaptToClient} from '../utils/film';
 
 export default class CommentsModel extends AbstractObservable {
   #apiService = null;
@@ -32,27 +33,44 @@ export default class CommentsModel extends AbstractObservable {
     return this.#comments;
   }
 
-  addComment = (updateType, update) => {
-    this.#comments = [
-      update,
-      ...this.#comments,
-    ];
+  addComment = async (updateType, update) => {
+    try {
+      const response = await this.#apiService.addComment(update);
+      this.#comments = response.comments;
 
-    this._notify(updateType, update);
+      const updateInfoFilm = {
+        film: adaptToClient(response.movie),
+      };
+
+      this._notify(updateType, updateInfoFilm);
+    } catch(err) {
+      throw new Error('Can\'t add comment');
+    }
   }
 
-  deleteComment = (updateType, update) => {
-    const index = this.#comments.findIndex((comment) => comment.id === update.id);
+  deleteComment = async (updateType, update) => {
+    const index = this.#comments.findIndex((comment) => comment.id === update.comment.id);
 
     if (index === -1) {
       throw new Error('Can\'t delete unexisting comment');
     }
 
-    this.#comments = [
-      ...this.#comments.slice(0, index),
-      ...this.#comments.slice(index + 1),
-    ];
+    try {
+      await this.#apiService.deleteComment(update.comment);
+      this.#comments = [
+        ...this.#comments.slice(0, index),
+        ...this.#comments.slice(index + 1),
+      ];
 
-    this._notify(updateType);
+      update.film.comments = update.film.comments.filter((item) => item !== update.comment.id);
+
+      const updateInfoFilm = {
+        film: update.film,
+      };
+
+      this._notify(updateType, updateInfoFilm);
+    } catch(err) {
+      throw new Error('Can\'t delete comment');
+    }
   }
 }

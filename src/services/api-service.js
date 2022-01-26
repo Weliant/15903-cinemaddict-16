@@ -1,8 +1,13 @@
-import {adaptToServer} from './utils/film.js';
+import {adaptToServer} from '../utils/film';
+
+export const AUTHORIZATION = 'Basic hdjkfhsdjf87879t';
+export const END_POINT = 'https://16.ecmascript.pages.academy/cinemaddict';
 
 const Method = {
   GET: 'GET',
   PUT: 'PUT',
+  POST: 'POST',
+  DELETE: 'DELETE',
 };
 
 export default class ApiService {
@@ -29,6 +34,28 @@ export default class ApiService {
     const parsedResponse = await ApiService.parseResponse(response);
 
     return parsedResponse;
+  }
+
+  addComment = async (data) => {
+    const response = await this.#load({
+      url: `comments/${data.film.id}`,
+      method: Method.POST,
+      body: JSON.stringify(data.comment),
+      headers: new Headers({'Content-Type': 'application/json'}),
+    });
+
+    const parsedResponse = await ApiService.parseResponse(response);
+
+    return parsedResponse;
+  }
+
+  deleteComment = async (comment) => {
+    const response = await this.#load({
+      url: `comments/${comment.id}`,
+      method: Method.DELETE,
+    });
+
+    return response;
   }
 
   updateFilm = async (film) => {

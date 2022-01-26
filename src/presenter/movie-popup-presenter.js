@@ -1,16 +1,15 @@
-import {remove} from '../utils/render.js';
-import FilmDetailsPopupView from '../view/film-details-popup-view.js';
-import CloseButtonView from '../view/close-button-view.js';
-import FilmDetailsPosterView from '../view/film-details-poster-view.js';
-import FilmDetailsInfoView from '../view/film-details-info-view.js';
-import FilmDetailsTitleCommentsView from '../view/film-details-title-comments-view.js';
-import FilmDetailsCommentView from '../view/film-details-comment-view.js';
-import FilmDetailsCommentsNewView from '../view/film-details-comments-new-view.js';
-import {UserAction, UpdateType, AUTHORIZATION, END_POINT} from '../consts.js';
-import CommentsModel from '../model/comments-model.js';
-import {getFullDateHumanize} from './../utils/film.js';
-import ApiService from '../api-service.js';
-import {generateIdComment} from '../mock/comment.js';
+import {remove} from '../utils/render';
+import FilmDetailsPopupView from '../view/film-details-popup-view';
+import CloseButtonView from '../view/close-button-view';
+import FilmDetailsPosterView from '../view/film-details-poster-view';
+import FilmDetailsInfoView from '../view/film-details-info-view';
+import FilmDetailsTitleCommentsView from '../view/film-details-title-comments-view';
+import FilmDetailsCommentView from '../view/film-details-comment-view';
+import {UserAction, UpdateType} from '../consts';
+import CommentsModel from '../model/comments-model';
+import ApiService, {AUTHORIZATION, END_POINT} from '../services/api-service';
+import CommentPresenter, {State as CommentPresenterViewState} from './comment-presenter';
+import CommentNewPresenter, {State as CommentNewPresenterViewState} from './comment-new-presenter';
 
 export default class MoviePopupPresenter {
   #film = null;
@@ -25,8 +24,9 @@ export default class MoviePopupPresenter {
   #closeButtonComponent = null;
   #commentsTitleComponent = null;
   #commentsComponent = null;
-  #commentsNewComponent = null;
   #commentsModel = null;
+  #commentPresenter = new Map();
+  #commentNewPresenter = null;
 
   constructor(changeData, addEventDocument, removePopup) {
     this.#changeData = changeData;
@@ -127,23 +127,39 @@ export default class MoviePopupPresenter {
     );
   }
 
-  #handleCommentViewAction = (actionType, updateType, update) => {
+  #handleCommentViewAction = async (actionType, updateType, update) => {
     switch (actionType) {
       case UserAction.ADD_COMMENT:
-        this.#commentsModel.addComment(updateType, update);
+        this.#commentNewPresenter.setViewState(CommentNewPresenterViewState.SAVING);
+        try {
+          await this.#commentsModel.addComment(updateType, update);
+        } catch(err) {
+          this.#commentNewPresenter.setViewState(CommentNewPresenterViewState.ABORTING);
+        }
         break;
       case UserAction.DELETE_COMMENT:
-        this.#commentsModel.deleteComment(updateType, update);
+        this.#commentPresenter.get(update.comment.id).setViewState(CommentPresenterViewState.DELETING);
+        try {
+          await this.#commentsModel.deleteComment(updateType, update);
+        } catch(err) {
+          this.#commentPresenter.get(update.comment.id).setViewState(CommentPresenterViewState.ABORTING);
+        }
         break;
     }
   }
 
-  #handleCommentModelEvent = (updateType) => {
+  #handleCommentModelEvent = (updateType, update) => {
     switch (updateType) {
       case UpdateType.MINOR:
         this.#newCommentData = {};
         this.clearComment();
         this.#renderComments();
+
+        this.#changeData(
+          UserAction.UPDATE_FILM,
+          UpdateType.MINOR,
+          {...update.film}
+        );
         break;
       case UpdateType.INIT:
         this.clearComment();
@@ -162,62 +178,34 @@ export default class MoviePopupPresenter {
     siteFilmDetailsCommentsWrapElement.innerHTML = errorLoadCommentsTemplate;
   }
 
+  #renderComment = (container, comment) => {
+    const commentPresenter = new CommentPresenter(container, this.#handleCommentViewAction);
+    commentPresenter.init(comment, this.#film);
+
+    this.#commentPresenter.set(comment.id, commentPresenter);
+  }
+
   #renderComments = () => {
     this.#commentsTitleComponent = new FilmDetailsTitleCommentsView(this.comments);
-    this.#commentsComponent = new FilmDetailsCommentView(this.comments);
-    this.#commentsNewComponent = new FilmDetailsCommentsNewView(this.#newCommentData);
+    this.#commentsComponent = new FilmDetailsCommentView();
+
+    this.comments.forEach((comment) => this.#renderComment(this.#commentsComponent, comment));
 
     const siteFilmDetailsCommentsWrapElement = this.#filmDetailsPopupComponent.element.querySelector('.film-details__comments-wrap');
     siteFilmDetailsCommentsWrapElement.textContent = '';
     siteFilmDetailsCommentsWrapElement.appendChild(this.#commentsTitleComponent.element);
     siteFilmDetailsCommentsWrapElement.appendChild(this.#commentsComponent.element);
-    siteFilmDetailsCommentsWrapElement.appendChild(this.#commentsNewComponent.element);
 
-    this.#commentsComponent.setDeleteClickHandler((id) => {
-      // вызвать запрос удаления комментария
-      this.#handleCommentViewAction(
-        UserAction.DELETE_COMMENT,
-        UpdateType.MINOR,
-        {id}
-      );
-
-      this.#film.comments = this.#film.comments.filter((item) => item !== id);
-
-      this.#changeData(
-        UserAction.UPDATE_FILM,
-        UpdateType.MINOR,
-        {...this.#film}
-      );
-    });
-
-    this.#commentsNewComponent.setSendKeydownHandler((comment) => {
-      const commentNew = {
-        id: generateIdComment(),
-        author: 'John Doe',
-        date: getFullDateHumanize('2019-05-11T16:12:32.554Z'),
-        ...comment
-      };
-
-      // вызвать запрос добавления комментария
-      this.#handleCommentViewAction(
-        UserAction.ADD_COMMENT,
-        UpdateType.MINOR,
-        commentNew
-      );
-
-      this.#film.comments.push(commentNew.id);
-      this.#changeData(
-        UserAction.UPDATE_FILM,
-        UpdateType.MINOR,
-        {...this.#film}
-      );
-    });
+    this.#commentNewPresenter = new CommentNewPresenter(siteFilmDetailsCommentsWrapElement, this.#handleCommentViewAction);
+    this.#commentNewPresenter.init(this.#newCommentData, this.#film);
   }
 
   clearComment = () => {
     remove(this.#commentsTitleComponent);
     remove(this.#commentsComponent);
-    remove(this.#commentsNewComponent);
+    this.#commentPresenter.forEach((presenter) => presenter.destroy());
+    this.#commentPresenter.clear();
+    this.#commentNewPresenter.destroy();
   }
 
   destroy = () => {

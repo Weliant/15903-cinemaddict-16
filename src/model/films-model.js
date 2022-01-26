@@ -1,6 +1,6 @@
-import AbstractObservable from '../utils/abstract-observable.js';
-import {adaptToClient} from '../utils/film.js';
-import {UpdateType} from '../consts.js';
+import AbstractObservable from '../services/abstract-observable';
+import {adaptToClient} from '../utils/film';
+import {UpdateType} from '../consts';
 
 export default class FilmsModel extends AbstractObservable {
   #apiService = null;
