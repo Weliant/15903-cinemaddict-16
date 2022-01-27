@@ -32,20 +32,6 @@ export default class FilmDetailsCommentItemView extends SmartView {
     return createFilmDetailsCommentItemTemplate(this._data);
   }
 
-  static parseCommentToData = (comment) => ({...comment,
-    isDisabled: false,
-    isDeleting: false
-  });
-
-  static parseDataToTask = (data) => {
-    const comment = {...data};
-
-    delete comment.isDisabled;
-    delete comment.isDeleting;
-
-    return comment;
-  }
-
   restoreHandlers = () => {
     this.setDeleteClickHandler(this._callback.deleteClick);
   }
@@ -60,5 +46,19 @@ export default class FilmDetailsCommentItemView extends SmartView {
     if (evt.target.classList.contains('film-details__comment-delete')){
       this._callback.deleteClick(evt.target.dataset.id);
     }
+  }
+
+  static parseCommentToData = (comment) => ({...comment,
+    isDisabled: false,
+    isDeleting: false
+  });
+
+  static parseDataToTask = (data) => {
+    const comment = {...data};
+
+    delete comment.isDisabled;
+    delete comment.isDeleting;
+
+    return comment;
   }
 }

@@ -7,8 +7,8 @@ import FooterPresenter from './presenter/footer-presenter';
 import FilmsModel from './model/films-model';
 import FilterModel from './model/filter-model';
 import ApiService, {AUTHORIZATION, END_POINT} from './services/api-service';
+import {render, RenderPosition} from './utils/render';
 import {MenuItem} from './consts';
-import {render, RenderPosition} from './utils/render.js';
 
 let typeMenu = MenuItem.FILMS;
 
@@ -52,7 +52,7 @@ const handleSiteMenuClick = (menuItem) => {
   }
 };
 
-filterPresenter.setMenuClickHandler(handleSiteMenuClick);
+filterPresenter.setFilterClickHandler(handleSiteMenuClick);
 menuComponent.setMenuClickHandler(handleSiteMenuClick);
 
 new UserPresenter(siteHeaderElement, filmsModel);

@@ -70,21 +70,18 @@ export default class FilmDetailsCommentsNewView extends SmartView {
     return createFilmDetailsCommentNewTemplate(this._data);
   }
 
-  static parseCommentToData = (comment) => ({...comment,
-    isDisabled: false,
-  });
-
-  static parseDataToTask = (data) => {
-    const comment = {...data};
-
-    delete comment.isDisabled;
-
-    return comment;
-  }
-
   restoreHandlers = () => {
     document.addEventListener('keydown', this.#buttonSendKeydownHandler);
     this.#setInnerHandlers();
+  }
+
+  setSendKeydownHandler = (callback) => {
+    this._callback.sendKeydown = callback;
+    document.addEventListener('keydown', this.#buttonSendKeydownHandler);
+  }
+
+  removeHandlers = () => {
+    document.removeEventListener('keydown', this.#buttonSendKeydownHandler);
   }
 
   #setInnerHandlers = () => {
@@ -110,11 +107,6 @@ export default class FilmDetailsCommentsNewView extends SmartView {
     }, true);
   }
 
-  setSendKeydownHandler = (callback) => {
-    this._callback.sendKeydown = callback;
-    document.addEventListener('keydown', this.#buttonSendKeydownHandler);
-  }
-
   #buttonSendKeydownHandler = (evt) => {
     if (isEnterMessagePressed(evt)) {
       evt.preventDefault();
@@ -126,7 +118,15 @@ export default class FilmDetailsCommentsNewView extends SmartView {
     }
   }
 
-  removeHandlers = () => {
-    document.removeEventListener('keydown', this.#buttonSendKeydownHandler);
+  static parseCommentToData = (comment) => ({...comment,
+    isDisabled: false,
+  });
+
+  static parseDataToTask = (data) => {
+    const comment = {...data};
+
+    delete comment.isDisabled;
+
+    return comment;
   }
 }

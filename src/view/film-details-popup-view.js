@@ -1,4 +1,4 @@
-import SmartView from './smart-view.js';
+import SmartView from './smart-view';
 
 const createFilmDetailsPopupTemplate = (film) => {
   const {id, userDetails} = film;
@@ -47,10 +47,6 @@ export default class FilmDetailsPopupView extends SmartView {
     return createFilmDetailsPopupTemplate(this._data);
   }
 
-  static parseTaskToData = (film) => ({...film,
-    countComments: film.comments.length
-  });
-
   setWatchListClickHandler = (callback) => {
     this._callback.watchListClick = callback;
     this.element.querySelector('.film-details__controls .film-details__control-button--watchlist').addEventListener('click', this.#watchListClickHandler);
@@ -80,4 +76,8 @@ export default class FilmDetailsPopupView extends SmartView {
     evt.preventDefault();
     this._callback.favoriteClick();
   }
+
+  static parseTaskToData = (film) => ({...film,
+    countComments: film.comments.length
+  });
 }

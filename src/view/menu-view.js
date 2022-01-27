@@ -6,10 +6,6 @@ const createMenuTemplate = () => `<nav class="main-navigation">
                                   </nav>`;
 
 export default class MenuView extends AbstractView {
-  constructor() {
-    super();
-  }
-
   get template() {
     return createMenuTemplate();
   }
