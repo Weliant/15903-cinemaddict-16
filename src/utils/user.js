@@ -3,7 +3,7 @@ import {Rank, URL_AVATAR} from '../consts.js';
 const userRank = new Map();
 const fromValue = 1;
 
-Rank.STATUS.forEach((film, i) => {
+Rank.STATUS.forEach((_film, i) => {
   const countFilms = fromValue + Rank.RANGE*i;
   userRank.set(countFilms, Rank.STATUS[i]);
 });

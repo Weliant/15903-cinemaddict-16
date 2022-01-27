@@ -1,5 +1,4 @@
 import dayjs from 'dayjs';
-import {GENRES} from '../consts.js';
 import {getRandomInteger} from './common.js';
 import relativeTime from'dayjs/plugin/relativeTime';
 
@@ -43,15 +42,25 @@ export const getTimesFormatted = (time) => {
   return `${hours}h ${minutes}m`;
 };
 
-export const getTopGenre = (films) => {
-  const genres = films.filter((film) => film.isWatched).map((film) => film.genres);
-
+export const getRatingGenres = (films) => {
+  const genres = films.filter((film) => film.userDetails.alreadyWatched).map((film) => film.filmInfo.genre);
   const ratingGenre = {};
 
-  for (const genre of GENRES) {
+  const genreSet = new Set();
+
+  genres.forEach((item) => {
+    item.reduce((_item, e) => genreSet.add(e), null);
+  });
+
+  for (const genre of genreSet) {
     ratingGenre[genre] = genres.filter((item) => item.includes(genre)).length;
   }
 
+  return ratingGenre;
+};
+
+export const getTopGenre = (films) => {
+  const ratingGenre = getRatingGenres(films);
   const top = Object.entries(ratingGenre).sort((a, b) => b[1] - a[1]);
 
   return top[0][0];

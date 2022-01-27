@@ -8,16 +8,15 @@ import MostCommentedView from '../view/most-commented-view';
 import ShowMoreButtonView from '../view/show-more-button-view';
 import FilmDetailsPopupContainerView from '../view/film-details-popup-container-view';
 import LoadingView from '../view/loading-view';
-import FooterStatisticView from '../view/footer-statistic-view';
 import {render, RenderPosition, remove, replace} from '../utils/render';
 import {isEscPressed} from '../utils/common';
 import {sortFilmDate, sortFilmRating, generateDataArray, sortFilmMostCommented} from '../utils/film';
 import {filter} from '../utils/filter';
 import {Films, SortType, BlockType, UpdateType, UserAction, FilterType} from '../consts';
-import MoviePresenter from './movie-presenter';
-import MoviePopupPresenter from './movie-popup-presenter';
+import FilmPresenter from './film-presenter';
+import FilmPopupPresenter from './film-popup-presenter';
 
-export default class MovieListPresenter {
+export default class FilmListPresenter {
   #filmsContainer = null;
 
   #bodyElement = document.querySelector('body');
@@ -59,8 +58,6 @@ export default class MovieListPresenter {
 
     this.#filterModel = filterModel;
     this.#filterModel.addObserver(this.#handleModelEvent);
-
-    this.init();
   }
 
   get films() {
@@ -168,11 +165,6 @@ export default class MovieListPresenter {
     render(this.#filmsContainer, this.#sortMenuComponent, RenderPosition.BEFOREEND);
   }
 
-  #renderFooter = () => {
-    const siteFooterStatisticElement = this.#bodyElement.querySelector('.footer .footer__statistics');
-    render(siteFooterStatisticElement, new FooterStatisticView(this.films.length), RenderPosition.BEFOREEND);
-  }
-
   #addEventDocument = () => {
     document.addEventListener('keydown', this.#onKeyDown);
   }
@@ -205,12 +197,12 @@ export default class MovieListPresenter {
 
   #openPopup = (film) => {
     this.#removePopup();
-    this.#popupPresenter = new MoviePopupPresenter(this.#handleViewAction, this.#addEventDocument, this.#removePopup);
+    this.#popupPresenter = new FilmPopupPresenter(this.#handleViewAction, this.#addEventDocument, this.#removePopup);
     this.#popupPresenter.init(film);
   }
 
   #renderFilm = (container, film, type = '') => {
-    const filmPresenter = new MoviePresenter(container, this.#handleViewAction, this.#openPopup);
+    const filmPresenter = new FilmPresenter(container, this.#handleViewAction, this.#openPopup);
     filmPresenter.init(film);
 
     if (type === BlockType.TOP) {
@@ -236,7 +228,7 @@ export default class MovieListPresenter {
     render(this.#topRateComponent, this.#filmsListContainerTopComponent, RenderPosition.BEFOREEND);
     render(this.#filmsContentComponent, this.#topRateComponent, RenderPosition.BEFOREEND);
 
-    let filmsOfHigherRating = this.films.slice().sort(sortFilmRating);
+    let filmsOfHigherRating = this.#filmsModel.films.slice().sort(sortFilmRating);
 
     if (filmsOfHigherRating.length && filmsOfHigherRating.length > 2) {
       let mark = 0;
@@ -262,7 +254,7 @@ export default class MovieListPresenter {
     render(this.#mostCommentedComponent, this.#filmsListContainerMostComponent, RenderPosition.BEFOREEND);
     render(this.#filmsContentComponent, this.#mostCommentedComponent, RenderPosition.BEFOREEND);
 
-    let filmsOfMostCommented = this.films.slice().sort(sortFilmMostCommented);
+    let filmsOfMostCommented = this.#filmsModel.films.slice().sort(sortFilmMostCommented);
 
     if (filmsOfMostCommented.length && filmsOfMostCommented.length > 2) {
       let mark = 0;
@@ -334,7 +326,7 @@ export default class MovieListPresenter {
   }
 
   #renderFilmsListTop = () => {
-    const filterRatingList = this.films.filter((item) => item.filmInfo.totalRating > 0);
+    const filterRatingList = this.#filmsModel.films.filter((item) => item.filmInfo.totalRating > 0);
 
     if (filterRatingList.length) {
       this.#renderFilmsTop(0, Films.COUNT_RATED);
@@ -342,7 +334,7 @@ export default class MovieListPresenter {
   }
 
   #renderFilmsListMostCommented = () => {
-    const filterMostCommentedList = this.films.filter((item) => item.comments.length > 0);
+    const filterMostCommentedList = this.#filmsModel.films.filter((item) => item.comments.length > 0);
 
     if (filterMostCommentedList.length) {
       this.#renderFilmsMostCommented(0, Films.COUNT_RATED);
@@ -356,7 +348,7 @@ export default class MovieListPresenter {
   #clearFilmsPage = ({resetRenderedFilmCount = false, resetSortType = false} = {}) => {
     const filmCount = this.films.length;
 
-    this.#scrollPopup = document.querySelector('.film-details').scrollTop;
+    this.#scrollPopup = document.querySelector('.film-details')?.scrollTop;
 
     this.#filmPresenter.forEach((presenter) => presenter.destroy());
     this.#filmPresenter.clear();
@@ -417,10 +409,24 @@ export default class MovieListPresenter {
 
     this.#renderFilmsListTop();
     this.#renderFilmsListMostCommented();
-    this.#renderFooter();
 
     if (this.#filmOpenId) {
       document.querySelector('.film-details').scrollTop = this.#scrollPopup;
     }
+  }
+
+  destroy = () => {
+    remove(this.#filmsContentComponent);
+    remove(this.#topRateComponent);
+    remove(this.#mostCommentedComponent);
+    remove(this.#filmsListContainerComponent);
+    remove(this.#filmsListContainerTopComponent);
+    remove(this.#filmsListContainerMostComponent);
+    remove(this.#filmDetailsPopupContainerComponent);
+    remove(this.#loadingComponent);
+    remove(this.#showMoreButtonComponent);
+    remove(this.#filmsListComponent);
+    remove(this.#noFilmComponent);
+    remove(this.#sortMenuComponent);
   }
 }

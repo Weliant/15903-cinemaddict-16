@@ -1,4 +1,3 @@
-export const GENRES = ['Drama', 'Film-Noir', 'Mystery', 'Musical', 'Love'];
 export const Films = { COUNT: 20, COUNT_PER_STEP: 5, COUNT_RATED: 2 };
 export const Rank = { STATUS: ['novice', 'fan', 'movie-buff'], RANGE: 10 };
 export const textMessage = {
@@ -44,4 +43,9 @@ export const FilterType = {
   WATCHLIST: 'watchlist',
   HISTORY: 'history',
   FAVORITES: 'favorites',
+};
+
+export const MenuItem = {
+  FILMS: 'FILMS',
+  STATISTICS: 'STATISTICS',
 };

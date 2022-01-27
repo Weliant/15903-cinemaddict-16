@@ -2,14 +2,12 @@ import {render, RenderPosition, remove, replace} from '../utils/render.js';
 import FilmCardView from '../view/film-card-view.js';
 import {UserAction, UpdateType} from '../consts.js';
 
-export default class MoviePresenter {
+export default class FilmPresenter {
   #filmListContainer = null;
   #filmComponent = null;
   #film = null;
   #changeData = null;
   #openPopupClickHandler = null;
-
-  #bodyElement = document.querySelector('body');
 
   constructor(filmListContainer, changeData, openPopup) {
     this.#filmListContainer = filmListContainer;
