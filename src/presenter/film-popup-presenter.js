@@ -11,7 +11,7 @@ import ApiService, {AUTHORIZATION, END_POINT} from '../services/api-service';
 import CommentPresenter, {State as CommentPresenterViewState} from './comment-presenter';
 import CommentNewPresenter, {State as CommentNewPresenterViewState} from './comment-new-presenter';
 
-export default class MoviePopupPresenter {
+export default class FilmPopupPresenter {
   #film = null;
   #changeData = null;
   #addEventDocument = null;

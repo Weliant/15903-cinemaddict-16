@@ -17,12 +17,9 @@ const createFilterTemplate = (filterItems, currentFilterType) => {
     .map((filter) => createFilterItemTemplate(filter, currentFilterType))
     .join('');
 
-  return `<nav class="main-navigation">
-            <div class="main-navigation__items">
-              ${filterItemsTemplate}
-            </div>
-            <a href="#stats" class="main-navigation__additional">Stats</a>
-          </nav>`;
+  return `<div class="main-navigation__items">
+            ${filterItemsTemplate}
+          </div>`;
 };
 
 export default class FilterView extends AbstractView {
@@ -49,6 +46,14 @@ export default class FilterView extends AbstractView {
 
     if (evt.target.classList.contains('main-navigation__item')) {
       this._callback.filterTypeChange(evt.target.dataset.filter);
+    }
+  }
+
+  clear = () => {
+    const navigationItemElement = this.element.querySelector('.main-navigation__item--active');
+
+    if (navigationItemElement) {
+      navigationItemElement.classList.remove('main-navigation__item--active');
     }
   }
 }

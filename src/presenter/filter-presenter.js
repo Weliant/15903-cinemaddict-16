@@ -1,7 +1,7 @@
 import FilterView from '../view/filter-view.js';
 import {render, RenderPosition, replace, remove} from '../utils/render.js';
 import {filter} from '../utils/filter.js';
-import {FilterType, UpdateType} from '../consts.js';
+import {FilterType, UpdateType, MenuItem} from '../consts.js';
 
 export default class FilterPresenter {
   #filterContainer = null;
@@ -9,6 +9,7 @@ export default class FilterPresenter {
   #filmsModel = null;
 
   #filterComponent = null;
+  #cbMenu = null;
 
   constructor(filterContainer, filterModel, filmsModel) {
     this.#filterContainer = filterContainer;
@@ -17,8 +18,6 @@ export default class FilterPresenter {
 
     this.#filmsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
-
-    this.init();
   }
 
   get filters() {
@@ -56,12 +55,16 @@ export default class FilterPresenter {
     this.#filterComponent.setFilterTypeChangeHandler(this.#handleFilterTypeChange);
 
     if (prevFilterComponent === null) {
-      render(this.#filterContainer, this.#filterComponent, RenderPosition.BEFOREEND);
+      render(this.#filterContainer, this.#filterComponent, RenderPosition.AFTERBEGIN);
       return;
     }
 
     replace(this.#filterComponent, prevFilterComponent);
     remove(prevFilterComponent);
+  }
+
+  setMenuClickHandler = (callback) => {
+    this.#cbMenu = callback;
   }
 
   #handleModelEvent = () => {
@@ -74,5 +77,15 @@ export default class FilterPresenter {
     }
 
     this.#filterModel.setFilter(UpdateType.MAJOR, filterType);
+    this.#cbMenu(MenuItem.FILMS);
+  }
+
+  clear = () => {
+    this.#filterModel.setFilter('', '');
+    this.#filterComponent.clear();
+  }
+
+  destroy = () => {
+    remove(this.#filterComponent);
   }
 }
