@@ -1,5 +1,5 @@
 import SmartView  from './smart-view';
-import {renderFilmsChart, getfilmsOfPeriod} from '../utils/statistics';
+import {renderFilmsChart, getFilmsOfPeriod} from '../utils/statistics';
 import {getHours, getRemainingMinutes, getTopGenre, getRatingGenres} from '../utils/film';
 
 const createUserRankTemplate = (user) => {
@@ -83,7 +83,7 @@ export default class StatisticsView extends SmartView {
 
   #setCharts = () => {
     const statisticCtx = this.element.querySelector('.statistic__chart');
-    const filmsOfPeriod = this._data.period !== 'all-time' ? getfilmsOfPeriod(this._films, this._data.period) : this._films;
+    const filmsOfPeriod = this._data.period !== 'all-time' ? getFilmsOfPeriod(this._films, this._data.period) : this._films;
     const ratingGenre = getRatingGenres(filmsOfPeriod);
     const genres = Object.keys(ratingGenre);
     const genresValue = Object.values(ratingGenre);
@@ -106,7 +106,7 @@ export default class StatisticsView extends SmartView {
 
     if (evt.target.classList.contains('statistic__filters-input')){
       this.updateData({
-        films: evt.target.value !== 'all-time' ? getfilmsOfPeriod(this._films, evt.target.value) : this._films,
+        films: evt.target.value !== 'all-time' ? getFilmsOfPeriod(this._films, evt.target.value) : this._films,
         period: evt.target.value
       });
     }

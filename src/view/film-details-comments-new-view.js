@@ -11,7 +11,7 @@ const emotionItem = (emotion) => emotion && emotion !== 'undefined' ? `<img src=
 
 const createFilmDetailsCommentNewTemplate = (data) => {
   const {comment, emotion, isDisabled} = data;
-  const text = !comment || comment === undefined ? ''  : comment.trim();
+  const text = !comment || false ? ''  : comment.trim();
 
   return   `<div class="film-details__new-comment">
         <div class="film-details__add-emoji-label" data-emotion="${emotion}">

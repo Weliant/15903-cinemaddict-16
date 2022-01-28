@@ -7,7 +7,7 @@ dayjs.extend(isSameOrAfter);
 
 const BAR_HEIGHT = 50;
 
-export const getfilmsOfPeriod = (films, period) => {
+export const getFilmsOfPeriod = (films, period) => {
   const filmsTarget = [];
 
   const dateTo = dayjs().subtract(1, period);
