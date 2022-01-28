@@ -91,18 +91,18 @@ export const adaptToClient = (film) => {
       actors: film.film_info.actors,
       release: {
         date: film.film_info.release.date !== null ? new Date(film.film_info.release.date) : film.film_info.release.date,
-        releaseCountry: film.film_info.release.release_country
+        releaseCountry: film.film_info.release.release_country,
       },
       runtime: film.film_info.runtime,
       genre: film.film_info.genre,
-      description: film.film_info.description
+      description: film.film_info.description,
     },
     userDetails: {
       watchlist: film.user_details.watchlist,
       alreadyWatched: film.user_details.already_watched,
       favorite: film.user_details.favorite,
-      watchingDate: film.user_details['watching_date'] !== null ? new Date(film.user_details['watching_date']) : film.user_details['watching_date']
-    }
+      watchingDate: film.user_details['watching_date'] !== null ? new Date(film.user_details['watching_date']) : film.user_details['watching_date'],
+    },
   };
 
   delete adaptedFilm['film_info'];
@@ -124,18 +124,18 @@ export const adaptToServer = (film) => {
       actors: film.filmInfo.actors,
       release: {
         date: film.filmInfo.release.date instanceof Date ?film.filmInfo.release.date.toISOString() : null,
-        'release_country': film.filmInfo.release.releaseCountry
+        'release_country': film.filmInfo.release.releaseCountry,
       },
       runtime: film.filmInfo.runtime,
       genre: film.filmInfo.genre,
-      description: film.filmInfo.description
+      description: film.filmInfo.description,
     },
     'user_details': {
       watchlist: film.userDetails.watchlist,
       'already_watched': film.userDetails.alreadyWatched,
       favorite: film.userDetails.favorite,
-      'watching_date': film.userDetails.watchingDate instanceof Date ? film.userDetails.watchingDate.toISOString() : null
-    }
+      'watching_date': film.userDetails.watchingDate instanceof Date ? film.userDetails.watchingDate.toISOString() : null,
+    },
   };
 
   delete adaptedFilm['filmInfo'];
