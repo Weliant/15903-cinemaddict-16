@@ -1,5 +1,5 @@
-import AbstractView from './abstract-view.js';
-import {SortType} from '../consts.js';
+import AbstractView from './abstract-view';
+import {SortType} from '../consts';
 
 const createSortMenuTemplate = (type) => {
   const defaultClassName = type === SortType.DEFAULT

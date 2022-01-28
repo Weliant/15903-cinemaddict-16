@@ -1,4 +1,4 @@
-import AbstractView from './abstract-view.js';
+import AbstractView from './abstract-view';
 
 const createFilmsListContainerTemplate = () => '<div class="films-list__container"></div>';
 

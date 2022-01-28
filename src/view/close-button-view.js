@@ -1,4 +1,4 @@
-import AbstractView from './abstract-view.js';
+import AbstractView from './abstract-view';
 
 const createCloseButtonTemplate = () => '<button class="film-details__close-btn" type="button">close</button>';
 

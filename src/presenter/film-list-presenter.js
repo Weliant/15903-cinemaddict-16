@@ -410,6 +410,16 @@ export default class FilmListPresenter {
     this.#renderFilmsListTop();
     this.#renderFilmsListMostCommented();
 
+    const filmsListExtraElement = this.#bodyElement.querySelectorAll('.films-list--extra');
+
+    if (filmsListExtraElement.length) {
+      if (filmsListExtraElement.length === 1) {
+        filmsListExtraElement[0].classList.add('hide-border');
+      } else {
+        filmsListExtraElement.forEach((elem) => elem.classList.remove('hide-border'));
+      }
+    }
+
     if (this.#filmOpenId) {
       document.querySelector('.film-details').scrollTop = this.#scrollPopup;
     }

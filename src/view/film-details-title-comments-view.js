@@ -1,4 +1,4 @@
-import SmartView from './smart-view.js';
+import SmartView from './smart-view';
 
 const createFilmDetailsCommentNewTemplate = (data) => {
   const {countComments} = data;

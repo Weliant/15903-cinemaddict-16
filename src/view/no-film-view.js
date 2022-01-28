@@ -1,5 +1,5 @@
-import AbstractView from './abstract-view.js';
-import {textMessage} from '../consts.js';
+import AbstractView from './abstract-view';
+import {textMessage} from '../consts';
 
 const createNoFilmTemplate = (filter) => {
   const text = textMessage[filter?.toUpperCase()];

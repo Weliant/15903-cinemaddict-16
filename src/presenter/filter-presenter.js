@@ -1,7 +1,7 @@
-import FilterView from '../view/filter-view.js';
-import {render, RenderPosition, replace, remove} from '../utils/render.js';
-import {filter} from '../utils/filter.js';
-import {FilterType, UpdateType, MenuItem} from '../consts.js';
+import FilterView from '../view/filter-view';
+import {render, RenderPosition, replace, remove} from '../utils/render';
+import {filter} from '../utils/filter';
+import {FilterType, UpdateType, MenuItem} from '../consts';
 
 export default class FilterPresenter {
   #filterContainer = null;
@@ -63,7 +63,7 @@ export default class FilterPresenter {
     remove(prevFilterComponent);
   }
 
-  setMenuClickHandler = (callback) => {
+  setFilterClickHandler = (callback) => {
     this.#cbMenu = callback;
   }
 

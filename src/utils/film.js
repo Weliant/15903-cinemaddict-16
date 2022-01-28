@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import {getRandomInteger} from './common.js';
+import {getRandomInteger} from './common';
 import relativeTime from'dayjs/plugin/relativeTime';
 
 dayjs.extend(relativeTime);

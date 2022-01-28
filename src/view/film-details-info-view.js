@@ -1,5 +1,5 @@
-import SmartView from './smart-view.js';
-import {getTimesFormatted, getReleaseDate} from '../utils/film.js';
+import SmartView from './smart-view';
+import {getTimesFormatted, getReleaseDate} from '../utils/film';
 
 const genreItem = (item) => `<span class="film-details__genre">${item}</span>`;
 

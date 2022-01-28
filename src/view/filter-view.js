@@ -1,5 +1,5 @@
-import {toCapitalizeLetter} from '../utils/film.js';
-import AbstractView from './abstract-view.js';
+import {toCapitalizeLetter} from '../utils/film';
+import AbstractView from './abstract-view';
 
 const getCountItemTemplate = (count) => `<span class="main-navigation__item-count">${count}</span>`;
 

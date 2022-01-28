@@ -1,4 +1,4 @@
-import AbstractView from './abstract-view.js';
+import AbstractView from './abstract-view';
 
 export const createTopTemplate = () => (
   ` <section class="films-list films-list--extra">

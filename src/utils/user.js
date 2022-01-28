@@ -1,4 +1,4 @@
-import {Rank, URL_AVATAR} from '../consts.js';
+import {Rank, URL_AVATAR} from '../consts';
 
 const userRank = new Map();
 const fromValue = 1;
